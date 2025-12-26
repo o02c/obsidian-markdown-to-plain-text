@@ -27,7 +27,7 @@ export function renderCustomRulesSection(
 	callbacks: CustomRuleCallbacks,
 ): void {
 	// Section header
-	new Setting(containerEl).setName("Custom Rules").setHeading();
+	containerEl.createEl("h2", { text: "Custom Rules" });
 	containerEl.createEl("p", {
 		text: "Regex replacement rules applied after markdown conversion.",
 		cls: "setting-item-description",

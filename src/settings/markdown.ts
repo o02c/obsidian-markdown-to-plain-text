@@ -3,7 +3,7 @@
  * Each function renders a collapsible section for a category of settings.
  */
 
-import { Setting } from "obsidian";
+import { Setting, setIcon } from "obsidian";
 import type { Preset } from "../types";
 
 // =============================================================================
@@ -13,6 +13,21 @@ import type { Preset } from "../types";
 export interface SectionCallbacks {
 	saveSettings: () => Promise<void>;
 	refreshDisplay: () => void;
+}
+
+// =============================================================================
+// Helpers
+// =============================================================================
+
+function addIconToSetting(setting: Setting, iconId: string): void {
+	const nameEl = setting.settingEl.querySelector(".setting-item-name");
+	if (nameEl) {
+		const iconEl = createSpan({ cls: "setting-icon" });
+		iconEl.style.display = "inline-flex";
+		iconEl.style.marginRight = "6px";
+		setIcon(iconEl, iconId);
+		nameEl.insertBefore(iconEl, nameEl.firstChild);
+	}
 }
 
 // =============================================================================
@@ -27,7 +42,7 @@ export function renderHeadingsSection(
 	const container = containerEl.createDiv();
 
 	// Section header with toggle
-	new Setting(container)
+	const headingSetting = new Setting(container)
 		.setName("Headings")
 		.setHeading()
 		.addToggle((toggle) =>
@@ -39,6 +54,7 @@ export function renderHeadingsSection(
 					callbacks.refreshDisplay();
 				}),
 		);
+	addIconToSetting(headingSetting, "heading");
 
 	if (!preset.settings.enableHeadings) return;
 
@@ -108,7 +124,7 @@ export function renderListsSection(
 	const container = containerEl.createDiv();
 
 	// Section header with toggle
-	new Setting(container)
+	const listSetting = new Setting(container)
 		.setName("Lists")
 		.setHeading()
 		.addToggle((toggle) =>
@@ -118,6 +134,7 @@ export function renderListsSection(
 				callbacks.refreshDisplay();
 			}),
 		);
+	addIconToSetting(listSetting, "list");
 
 	if (!preset.settings.enableLists) return;
 
@@ -174,7 +191,7 @@ export function renderTextDecorationSection(
 	const container = containerEl.createDiv();
 
 	// Section header with toggle
-	new Setting(container)
+	const textSetting = new Setting(container)
 		.setName("Text Decoration")
 		.setHeading()
 		.addToggle((toggle) =>
@@ -186,6 +203,7 @@ export function renderTextDecorationSection(
 					callbacks.refreshDisplay();
 				}),
 		);
+	addIconToSetting(textSetting, "bold");
 
 	if (!preset.settings.enableTextDecoration) return;
 
@@ -239,7 +257,7 @@ export function renderBlockElementsSection(
 	const container = containerEl.createDiv();
 
 	// Section header with toggle
-	new Setting(container)
+	const blockSetting = new Setting(container)
 		.setName("Block Elements")
 		.setHeading()
 		.addToggle((toggle) =>
@@ -251,6 +269,7 @@ export function renderBlockElementsSection(
 					callbacks.refreshDisplay();
 				}),
 		);
+	addIconToSetting(blockSetting, "text-quote");
 
 	if (!preset.settings.enableBlockElements) return;
 
@@ -294,7 +313,7 @@ export function renderCodeSection(
 	const container = containerEl.createDiv();
 
 	// Section header with toggle
-	new Setting(container)
+	const codeSetting = new Setting(container)
 		.setName("Code")
 		.setHeading()
 		.addToggle((toggle) =>
@@ -304,6 +323,7 @@ export function renderCodeSection(
 				callbacks.refreshDisplay();
 			}),
 		);
+	addIconToSetting(codeSetting, "code");
 
 	if (!preset.settings.enableCode) return;
 

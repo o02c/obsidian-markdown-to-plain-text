@@ -335,10 +335,12 @@ export function renderPresetEditor(
 	// Separator
 	containerEl.createEl("hr", { cls: "setting-separator" });
 
+	// Markdown settings header
+	containerEl.createEl("h2", { text: "Markdown Settings" });
+
 	// Markdown settings master toggle
 	new Setting(containerEl)
-		.setName("Markdown Settings")
-		.setHeading()
+		.setName("Enabled")
 		.addToggle((toggle) =>
 			toggle
 				.setValue(preset.settings.enableMarkdownConversion)
