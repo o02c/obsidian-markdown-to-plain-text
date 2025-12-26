@@ -129,6 +129,9 @@ function renderDragHandle(container: HTMLElement): void {
 // Drag and Drop
 // =============================================================================
 
+// Track the currently dragged item index
+let draggedPresetIndex: number | null = null;
+
 function setupPresetDragEvents(
 	presetEl: HTMLElement,
 	index: number,
@@ -136,38 +139,77 @@ function setupPresetDragEvents(
 ): void {
 	presetEl.addEventListener("dragstart", (e) => {
 		presetEl.style.opacity = "0.5";
+		draggedPresetIndex = index;
 		e.dataTransfer?.setData("text/plain", String(index));
 	});
 
 	presetEl.addEventListener("dragend", () => {
 		presetEl.style.opacity = "1";
+		draggedPresetIndex = null;
+		// Clear all highlights
+		const container = presetEl.parentElement;
+		if (container) {
+			container.querySelectorAll(".preset-item").forEach((el) => {
+				(el as HTMLElement).style.borderTop = "";
+				(el as HTMLElement).style.borderBottom = "";
+			});
+		}
 	});
 
 	presetEl.addEventListener("dragover", (e) => {
 		e.preventDefault();
-		const fromIndex = Number(e.dataTransfer?.getData("text/plain"));
-		if (fromIndex === index) {
+		if (draggedPresetIndex === null || draggedPresetIndex === index) {
 			presetEl.style.borderTop = "";
+			presetEl.style.borderBottom = "";
 			return;
 		}
-		presetEl.style.borderTop = "2px solid var(--interactive-accent)";
+
+		// Determine if mouse is in upper or lower half of element
+		const rect = presetEl.getBoundingClientRect();
+		const midY = rect.top + rect.height / 2;
+		const isUpperHalf = e.clientY < midY;
+
+		// Show appropriate border
+		if (isUpperHalf) {
+			presetEl.style.borderTop = "2px solid var(--interactive-accent)";
+			presetEl.style.borderBottom = "";
+		} else {
+			presetEl.style.borderTop = "";
+			presetEl.style.borderBottom = "2px solid var(--interactive-accent)";
+		}
 	});
 
 	presetEl.addEventListener("dragleave", () => {
 		presetEl.style.borderTop = "";
+		presetEl.style.borderBottom = "";
 	});
 
 	presetEl.addEventListener("drop", async (e) => {
 		e.preventDefault();
 		presetEl.style.borderTop = "";
-		const fromIndex = Number(e.dataTransfer?.getData("text/plain"));
+		presetEl.style.borderBottom = "";
 
+		const fromIndex = Number(e.dataTransfer?.getData("text/plain"));
 		if (fromIndex === index) return;
+
+		// Determine drop position based on mouse location
+		const rect = presetEl.getBoundingClientRect();
+		const midY = rect.top + rect.height / 2;
+		const dropAfter = e.clientY >= midY;
+
+		// Calculate target index
+		let toIndex: number;
+		if (dropAfter) {
+			// Drop after this element
+			toIndex = fromIndex < index ? index : index + 1;
+		} else {
+			// Drop before this element
+			toIndex = fromIndex < index ? index - 1 : index;
+		}
 
 		// Reorder presets
 		const presets = callbacks.getSettings().presets;
 		const [moved] = presets.splice(fromIndex, 1);
-		const toIndex = fromIndex < index ? index - 1 : index;
 		presets.splice(toIndex, 0, moved);
 
 		await callbacks.saveSettings();
