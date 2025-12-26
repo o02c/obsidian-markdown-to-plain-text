@@ -527,56 +527,56 @@ describe("convertMarkdownToPlainText", () => {
 			expect(result.trim()).toBe("Title");
 		});
 
-		it("skips list conversion when enableLists is false", () => {
-			const settings = { ...DEFAULT_SETTINGS, enableLists: false };
+		it("skips bullet conversion when enableBullet is false", () => {
+			const settings = { ...DEFAULT_SETTINGS, enableBullet: false };
 			const result = convertMarkdownToPlainText("- Item", settings);
 			expect(result.trim()).toBe("Item");
 		});
 
-		it("skips checkbox conversion when enableLists is false", () => {
-			const settings = { ...DEFAULT_SETTINGS, enableLists: false };
+		it("skips checkbox conversion when enableCheckbox is false", () => {
+			const settings = { ...DEFAULT_SETTINGS, enableCheckbox: false };
 			const result = convertMarkdownToPlainText("- [x] Done", settings);
 			expect(result.trim()).toBe("Done");
 		});
 
-		it("skips bold conversion when enableTextDecoration is false", () => {
-			const settings = { ...DEFAULT_SETTINGS, enableTextDecoration: false };
+		it("skips bold conversion when useBoldUnicode is false", () => {
+			const settings = { ...DEFAULT_SETTINGS, useBoldUnicode: false };
 			const result = convertMarkdownToPlainText("**bold**", settings);
 			expect(result.trim()).toBe("bold");
 		});
 
-		it("skips italic conversion when enableTextDecoration is false", () => {
-			const settings = { ...DEFAULT_SETTINGS, enableTextDecoration: false };
+		it("skips italic conversion when useItalicUnicode is false", () => {
+			const settings = { ...DEFAULT_SETTINGS, useItalicUnicode: false };
 			const result = convertMarkdownToPlainText("*italic*", settings);
 			expect(result.trim()).toBe("italic");
 		});
 
-		it("skips strikethrough conversion when enableTextDecoration is false", () => {
-			const settings = { ...DEFAULT_SETTINGS, enableTextDecoration: false };
+		it("skips strikethrough conversion when useStrikethrough is false", () => {
+			const settings = { ...DEFAULT_SETTINGS, useStrikethrough: false };
 			const result = convertMarkdownToPlainText("~~strike~~", settings);
 			expect(result.trim()).toBe("strike");
 		});
 
-		it("skips blockquote conversion when enableBlockElements is false", () => {
-			const settings = { ...DEFAULT_SETTINGS, enableBlockElements: false };
+		it("skips blockquote conversion when enableBlockquote is false", () => {
+			const settings = { ...DEFAULT_SETTINGS, enableBlockquote: false };
 			const result = convertMarkdownToPlainText("> Quote", settings);
 			expect(result.trim()).toBe("Quote");
 		});
 
-		it("skips horizontal rule conversion when enableBlockElements is false", () => {
-			const settings = { ...DEFAULT_SETTINGS, enableBlockElements: false };
+		it("skips horizontal rule conversion when enableHorizontalRule is false", () => {
+			const settings = { ...DEFAULT_SETTINGS, enableHorizontalRule: false };
 			const result = convertMarkdownToPlainText("---", settings);
 			expect(result.trim()).toBe("");
 		});
 
-		it("skips code block conversion when enableCode is false", () => {
-			const settings = { ...DEFAULT_SETTINGS, enableCode: false };
+		it("skips code block conversion when enableCodeBlock is false", () => {
+			const settings = { ...DEFAULT_SETTINGS, enableCodeBlock: false };
 			const result = convertMarkdownToPlainText("```\ncode\n```", settings);
 			expect(result.trim()).toBe("code");
 		});
 
-		it("skips inline code conversion when enableCode is false", () => {
-			const settings = { ...DEFAULT_SETTINGS, enableCode: false };
+		it("skips inline code conversion when enableInlineCode is false", () => {
+			const settings = { ...DEFAULT_SETTINGS, enableInlineCode: false };
 			const result = convertMarkdownToPlainText("some `code` here", settings);
 			expect(result).toContain("code");
 			expect(result).not.toContain("`");
