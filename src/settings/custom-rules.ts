@@ -117,6 +117,9 @@ function renderDragHandle(container: HTMLElement): void {
 // Drag and Drop
 // =============================================================================
 
+// Track the currently dragged item index
+let draggedRuleIndex: number | null = null;
+
 function setupDragEvents(
 	ruleEl: HTMLElement,
 	index: number,
@@ -125,38 +128,77 @@ function setupDragEvents(
 ): void {
 	ruleEl.addEventListener("dragstart", (e) => {
 		ruleEl.style.opacity = "0.5";
+		draggedRuleIndex = index;
 		e.dataTransfer?.setData("text/plain", String(index));
 	});
 
 	ruleEl.addEventListener("dragend", () => {
 		ruleEl.style.opacity = "1";
+		draggedRuleIndex = null;
+		// Clear all highlights
+		const container = ruleEl.parentElement;
+		if (container) {
+			container.querySelectorAll(".custom-rule-item").forEach((el) => {
+				(el as HTMLElement).style.borderTop = "";
+				(el as HTMLElement).style.borderBottom = "";
+			});
+		}
 	});
 
 	ruleEl.addEventListener("dragover", (e) => {
 		e.preventDefault();
-		const fromIndex = Number(e.dataTransfer?.getData("text/plain"));
-		if (fromIndex === index) {
+		if (draggedRuleIndex === null || draggedRuleIndex === index) {
 			ruleEl.style.borderTop = "";
+			ruleEl.style.borderBottom = "";
 			return;
 		}
-		ruleEl.style.borderTop = "2px solid var(--interactive-accent)";
+
+		// Determine if mouse is in upper or lower half of element
+		const rect = ruleEl.getBoundingClientRect();
+		const midY = rect.top + rect.height / 2;
+		const isUpperHalf = e.clientY < midY;
+
+		// Show appropriate border
+		if (isUpperHalf) {
+			ruleEl.style.borderTop = "2px solid var(--interactive-accent)";
+			ruleEl.style.borderBottom = "";
+		} else {
+			ruleEl.style.borderTop = "";
+			ruleEl.style.borderBottom = "2px solid var(--interactive-accent)";
+		}
 	});
 
 	ruleEl.addEventListener("dragleave", () => {
 		ruleEl.style.borderTop = "";
+		ruleEl.style.borderBottom = "";
 	});
 
 	ruleEl.addEventListener("drop", async (e) => {
 		e.preventDefault();
 		ruleEl.style.borderTop = "";
-		const fromIndex = Number(e.dataTransfer?.getData("text/plain"));
+		ruleEl.style.borderBottom = "";
 
+		const fromIndex = Number(e.dataTransfer?.getData("text/plain"));
 		if (fromIndex === index) return;
+
+		// Determine drop position based on mouse location
+		const rect = ruleEl.getBoundingClientRect();
+		const midY = rect.top + rect.height / 2;
+		const dropAfter = e.clientY >= midY;
+
+		// Calculate target index
+		let toIndex: number;
+		if (dropAfter) {
+			// Drop after this element
+			toIndex = fromIndex < index ? index : index + 1;
+		} else {
+			// Drop before this element
+			toIndex = fromIndex < index ? index - 1 : index;
+		}
 
 		// Reorder rules
 		const rules = preset.settings.customRules;
 		const [moved] = rules.splice(fromIndex, 1);
-		const toIndex = fromIndex < index ? index - 1 : index;
 		rules.splice(toIndex, 0, moved);
 
 		await callbacks.saveSettings();
