@@ -1,7 +1,7 @@
 {
   "id": "markdown-to-plain-text",
   "name": "Markdown to Plain Text",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "minAppVersion": "0.15.0",
   "description": "Convert Markdown to plain text with Unicode formatting and custom regex rules",
   "author": "o2c",
