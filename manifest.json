@@ -1,0 +1,10 @@
+{
+	"id": "selection-to-file",
+	"name": "Markdown to Plain Text",
+	"version": "1.0.0",
+	"minAppVersion": "0.15.0",
+	"description": "Convert Markdown to plain text with Unicode formatting and custom regex rules",
+	"author": "o2c",
+	"authorUrl": "https://github.com/o02c",
+	"isDesktopOnly": false
+}

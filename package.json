@@ -1,0 +1,35 @@
+{
+	"name": "obsidian-selection-to-file",
+	"version": "1.0.0",
+	"description": "Convert Markdown to plain text with Unicode formatting and custom regex rules",
+	"main": "main.js",
+	"packageManager": "pnpm@9.6.0",
+	"scripts": {
+		"preinstall": "npx only-allow pnpm",
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"test": "vitest",
+		"test:run": "vitest run",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write .",
+		"format": "biome format --write .",
+		"install:vault": "./scripts/deploy.sh",
+		"uninstall:vault": "./scripts/undeploy.sh"
+	},
+	"keywords": [],
+	"author": "o2c",
+	"license": "MIT",
+	"devDependencies": {
+		"@biomejs/biome": "^2.3.10",
+		"@types/node": "^16.11.6",
+		"builtin-modules": "^3.3.0",
+		"esbuild": "0.17.3",
+		"obsidian": "latest",
+		"tslib": "2.4.0",
+		"typescript": "4.7.4",
+		"vitest": "^4.0.16"
+	},
+	"dependencies": {
+		"marked": "^17.0.1"
+	}
+}
