@@ -363,7 +363,7 @@ export function renderPresetEditor(
 
 	renderHeadingsSection(containerEl, preset, sectionCallbacks);
 	renderListsSection(containerEl, preset, sectionCallbacks);
-	renderTextDecorationSection(containerEl, preset, sectionCallbacks);
 	renderBlockElementsSection(containerEl, preset, sectionCallbacks);
 	renderCodeSection(containerEl, preset, sectionCallbacks);
+	renderTextDecorationSection(containerEl, preset, sectionCallbacks);
 }

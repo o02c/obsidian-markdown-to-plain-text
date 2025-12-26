@@ -74,7 +74,7 @@ function renderToken(token: Token, ctx: RenderContext): string {
 		case "image":
 			return renderImage(token as Tokens.Image);
 		case "hr":
-			return ctx.settings.enableBlockElements
+			return ctx.settings.enableHorizontalRule
 				? `${ctx.settings.horizontalRule}\n`
 				: "";
 		case "br":
@@ -131,19 +131,16 @@ function renderText(token: Tokens.Text, ctx: RenderContext): string {
 
 function renderStrong(token: Tokens.Strong, ctx: RenderContext): string {
 	const text = renderTokens(token.tokens, ctx);
-	if (!ctx.settings.enableTextDecoration) return text;
 	return ctx.settings.useBoldUnicode ? convertToBoldUnicode(text) : text;
 }
 
 function renderEm(token: Tokens.Em, ctx: RenderContext): string {
 	const text = renderTokens(token.tokens, ctx);
-	if (!ctx.settings.enableTextDecoration) return text;
 	return ctx.settings.useItalicUnicode ? convertToItalicUnicode(text) : text;
 }
 
 function renderDel(token: Tokens.Del, ctx: RenderContext): string {
 	const text = renderTokens(token.tokens, ctx);
-	if (!ctx.settings.enableTextDecoration) return text;
 	return ctx.settings.useStrikethrough ? convertToStrikethrough(text) : text;
 }
 
@@ -152,12 +149,15 @@ function renderDel(token: Tokens.Del, ctx: RenderContext): string {
 // =============================================================================
 
 function renderCodespan(token: Tokens.Codespan, ctx: RenderContext): string {
-	if (!ctx.settings.enableCode) return token.text;
+	if (!ctx.settings.enableInlineCode) return token.text;
 	const w = ctx.settings.inlineCodeWrapper;
 	return `${w}${token.text}${w}`;
 }
 
 function renderCode(token: Tokens.Code, ctx: RenderContext): string {
+	if (!ctx.settings.enableCodeBlock) {
+		return `${token.text}\n`;
+	}
 	const prefix = ctx.settings.codeBlockPrefix;
 	return `${token.text
 		.split("\n")
@@ -175,7 +175,7 @@ function renderBlockquote(
 ): string {
 	const content = renderTokens(token.tokens, ctx);
 
-	if (!ctx.settings.enableBlockElements) {
+	if (!ctx.settings.enableBlockquote) {
 		return content;
 	}
 
@@ -220,13 +220,13 @@ function renderListItem(
 		.map((list) => renderList(list, nestedCtx))
 		.join("");
 
-	if (!settings.enableLists) {
+	const bullet = getBullet(token, settings, ordered, index);
+	if (bullet === null) {
+		// No bullet/checkbox conversion
 		return `${content}\n${nested}`;
 	}
 
 	const indent = "  ".repeat(listDepth);
-	const bullet = getBullet(token, settings, ordered, index);
-
 	return `${indent}${bullet} ${content}\n${nested}`;
 }
 
@@ -235,16 +235,23 @@ function getBullet(
 	settings: MarkdownConversionSettings,
 	ordered: boolean,
 	index: number,
-): string {
+): string | null {
 	// Standard checkboxes (marked recognizes [x] and [ ])
 	if (token.task) {
+		if (!settings.enableCheckbox) return null;
 		return token.checked
 			? settings.checkboxChecked
 			: settings.checkboxUnchecked;
 	}
 
-	// Ordered/unordered
-	return ordered ? `${index + 1}.` : settings.bulletChar;
+	// Ordered lists keep their numbers
+	if (ordered) {
+		return `${index + 1}.`;
+	}
+
+	// Unordered lists
+	if (!settings.enableBullet) return null;
+	return settings.bulletChar;
 }
 
 // =============================================================================

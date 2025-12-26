@@ -123,60 +123,77 @@ export function renderListsSection(
 ): void {
 	const container = containerEl.createDiv();
 
-	// Section header with toggle
-	const listSetting = new Setting(container)
-		.setName("Lists")
-		.setHeading()
-		.addToggle((toggle) =>
-			toggle.setValue(preset.settings.enableLists).onChange(async (value) => {
-				preset.settings.enableLists = value;
-				await callbacks.saveSettings();
-				callbacks.refreshDisplay();
-			}),
-		);
+	// Section header
+	const listSetting = new Setting(container).setName("Lists").setHeading();
 	addIconToSetting(listSetting, "list");
 
-	if (!preset.settings.enableLists) return;
-
-	// List character settings
+	// Bullet character subsection
 	new Setting(container)
 		.setName("Bullet character")
-		.setDesc("Replacement for - or * list items")
-		.addText((text) =>
-			text
-				.setPlaceholder("•")
-				.setValue(preset.settings.bulletChar)
+		.addToggle((toggle) =>
+			toggle
+				.setValue(preset.settings.enableBullet)
 				.onChange(async (value) => {
-					preset.settings.bulletChar = value;
+					preset.settings.enableBullet = value;
 					await callbacks.saveSettings();
+					callbacks.refreshDisplay();
 				}),
 		);
 
+	if (preset.settings.enableBullet) {
+		new Setting(container)
+			.setDesc("Replacement for - or * list items")
+			.addText((text) =>
+				text
+					.setPlaceholder("•")
+					.setValue(preset.settings.bulletChar)
+					.onChange(async (value) => {
+						preset.settings.bulletChar = value;
+						await callbacks.saveSettings();
+					}),
+			);
+	}
+
+	// Checkbox subsection
 	new Setting(container)
-		.setName("Checked checkbox")
-		.setDesc("Replacement for [x]")
-		.addText((text) =>
-			text
-				.setPlaceholder("☑")
-				.setValue(preset.settings.checkboxChecked)
+		.setName("Checkbox")
+		.addToggle((toggle) =>
+			toggle
+				.setValue(preset.settings.enableCheckbox)
 				.onChange(async (value) => {
-					preset.settings.checkboxChecked = value;
+					preset.settings.enableCheckbox = value;
 					await callbacks.saveSettings();
+					callbacks.refreshDisplay();
 				}),
 		);
 
-	new Setting(container)
-		.setName("Unchecked checkbox")
-		.setDesc("Replacement for [ ]")
-		.addText((text) =>
-			text
-				.setPlaceholder("☐")
-				.setValue(preset.settings.checkboxUnchecked)
-				.onChange(async (value) => {
-					preset.settings.checkboxUnchecked = value;
-					await callbacks.saveSettings();
-				}),
-		);
+	if (preset.settings.enableCheckbox) {
+		new Setting(container)
+			.setName("Checked")
+			.setDesc("Replacement for [x]")
+			.addText((text) =>
+				text
+					.setPlaceholder("☑")
+					.setValue(preset.settings.checkboxChecked)
+					.onChange(async (value) => {
+						preset.settings.checkboxChecked = value;
+						await callbacks.saveSettings();
+					}),
+			);
+
+		new Setting(container)
+			.setName("Unchecked")
+			.setDesc("Replacement for [ ]")
+			.addText((text) =>
+				text
+					.setPlaceholder("☐")
+					.setValue(preset.settings.checkboxUnchecked)
+					.onChange(async (value) => {
+						preset.settings.checkboxUnchecked = value;
+						await callbacks.saveSettings();
+					}),
+			);
+	}
 }
 
 // =============================================================================
@@ -190,22 +207,11 @@ export function renderTextDecorationSection(
 ): void {
 	const container = containerEl.createDiv();
 
-	// Section header with toggle
+	// Section header
 	const textSetting = new Setting(container)
 		.setName("Text Decoration")
-		.setHeading()
-		.addToggle((toggle) =>
-			toggle
-				.setValue(preset.settings.enableTextDecoration)
-				.onChange(async (value) => {
-					preset.settings.enableTextDecoration = value;
-					await callbacks.saveSettings();
-					callbacks.refreshDisplay();
-				}),
-		);
+		.setHeading();
 	addIconToSetting(textSetting, "bold");
-
-	if (!preset.settings.enableTextDecoration) return;
 
 	// Unicode conversion toggles
 	new Setting(container)
@@ -256,49 +262,65 @@ export function renderBlockElementsSection(
 ): void {
 	const container = containerEl.createDiv();
 
-	// Section header with toggle
+	// Section header
 	const blockSetting = new Setting(container)
 		.setName("Block Elements")
-		.setHeading()
+		.setHeading();
+	addIconToSetting(blockSetting, "text-quote");
+
+	// Horizontal rule subsection
+	new Setting(container)
+		.setName("Horizontal rule")
 		.addToggle((toggle) =>
 			toggle
-				.setValue(preset.settings.enableBlockElements)
+				.setValue(preset.settings.enableHorizontalRule)
 				.onChange(async (value) => {
-					preset.settings.enableBlockElements = value;
+					preset.settings.enableHorizontalRule = value;
 					await callbacks.saveSettings();
 					callbacks.refreshDisplay();
 				}),
 		);
-	addIconToSetting(blockSetting, "text-quote");
 
-	if (!preset.settings.enableBlockElements) return;
+	if (preset.settings.enableHorizontalRule) {
+		new Setting(container)
+			.setDesc("Replacement for --- or ***")
+			.addText((text) =>
+				text
+					.setPlaceholder("────────────")
+					.setValue(preset.settings.horizontalRule)
+					.onChange(async (value) => {
+						preset.settings.horizontalRule = value;
+						await callbacks.saveSettings();
+					}),
+			);
+	}
 
-	// Block element settings
+	// Blockquote subsection
 	new Setting(container)
-		.setName("Horizontal rule")
-		.setDesc("Replacement for --- or ***")
-		.addText((text) =>
-			text
-				.setPlaceholder("────────────")
-				.setValue(preset.settings.horizontalRule)
+		.setName("Blockquote")
+		.addToggle((toggle) =>
+			toggle
+				.setValue(preset.settings.enableBlockquote)
 				.onChange(async (value) => {
-					preset.settings.horizontalRule = value;
+					preset.settings.enableBlockquote = value;
 					await callbacks.saveSettings();
+					callbacks.refreshDisplay();
 				}),
 		);
 
-	new Setting(container)
-		.setName("Blockquote prefix")
-		.setDesc("Prefix for > quoted lines")
-		.addText((text) =>
-			text
-				.setPlaceholder("│ ")
-				.setValue(preset.settings.blockquotePrefix)
-				.onChange(async (value) => {
-					preset.settings.blockquotePrefix = value;
-					await callbacks.saveSettings();
-				}),
-		);
+	if (preset.settings.enableBlockquote) {
+		new Setting(container)
+			.setDesc("Prefix for > quoted lines")
+			.addText((text) =>
+				text
+					.setPlaceholder("│ ")
+					.setValue(preset.settings.blockquotePrefix)
+					.onChange(async (value) => {
+						preset.settings.blockquotePrefix = value;
+						await callbacks.saveSettings();
+					}),
+			);
+	}
 }
 
 // =============================================================================
@@ -312,45 +334,61 @@ export function renderCodeSection(
 ): void {
 	const container = containerEl.createDiv();
 
-	// Section header with toggle
-	const codeSetting = new Setting(container)
-		.setName("Code")
-		.setHeading()
-		.addToggle((toggle) =>
-			toggle.setValue(preset.settings.enableCode).onChange(async (value) => {
-				preset.settings.enableCode = value;
-				await callbacks.saveSettings();
-				callbacks.refreshDisplay();
-			}),
-		);
+	// Section header
+	const codeSetting = new Setting(container).setName("Code").setHeading();
 	addIconToSetting(codeSetting, "code");
 
-	if (!preset.settings.enableCode) return;
-
-	// Code formatting settings
+	// Code block subsection
 	new Setting(container)
-		.setName("Code block prefix")
-		.setDesc("Prefix for each line in code blocks")
-		.addText((text) =>
-			text
-				.setPlaceholder("  ")
-				.setValue(preset.settings.codeBlockPrefix)
+		.setName("Code block")
+		.addToggle((toggle) =>
+			toggle
+				.setValue(preset.settings.enableCodeBlock)
 				.onChange(async (value) => {
-					preset.settings.codeBlockPrefix = value;
+					preset.settings.enableCodeBlock = value;
 					await callbacks.saveSettings();
+					callbacks.refreshDisplay();
 				}),
 		);
 
+	if (preset.settings.enableCodeBlock) {
+		new Setting(container)
+			.setDesc("Prefix for each line in code blocks")
+			.addText((text) =>
+				text
+					.setPlaceholder("  ")
+					.setValue(preset.settings.codeBlockPrefix)
+					.onChange(async (value) => {
+						preset.settings.codeBlockPrefix = value;
+						await callbacks.saveSettings();
+					}),
+			);
+	}
+
+	// Inline code subsection
 	new Setting(container)
-		.setName("Inline code wrapper")
-		.setDesc("Wrapper for `inline code`")
-		.addText((text) =>
-			text
-				.setPlaceholder("`")
-				.setValue(preset.settings.inlineCodeWrapper)
+		.setName("Inline code")
+		.addToggle((toggle) =>
+			toggle
+				.setValue(preset.settings.enableInlineCode)
 				.onChange(async (value) => {
-					preset.settings.inlineCodeWrapper = value;
+					preset.settings.enableInlineCode = value;
 					await callbacks.saveSettings();
+					callbacks.refreshDisplay();
 				}),
 		);
+
+	if (preset.settings.enableInlineCode) {
+		new Setting(container)
+			.setDesc("Wrapper for `inline code`")
+			.addText((text) =>
+				text
+					.setPlaceholder("`")
+					.setValue(preset.settings.inlineCodeWrapper)
+					.onChange(async (value) => {
+						preset.settings.inlineCodeWrapper = value;
+						await callbacks.saveSettings();
+					}),
+			);
+	}
 }

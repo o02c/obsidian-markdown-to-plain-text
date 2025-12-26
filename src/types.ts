@@ -43,36 +43,38 @@ export function generatePresetId(): string {
 
 /** Settings for markdown to plain text conversion */
 export interface MarkdownConversionSettings {
-	// Section toggles
+	// Master toggle
 	enableMarkdownConversion: boolean;
-	enableHeadings: boolean;
-	enableLists: boolean;
-	enableTextDecoration: boolean;
-	enableBlockElements: boolean;
-	enableCode: boolean;
 
-	// Headings
+	// Headings (section toggle)
+	enableHeadings: boolean;
 	heading1Prefix: string;
 	heading2Prefix: string;
 	heading3Prefix: string;
 	heading4Prefix: string;
 
-	// Lists
+	// Lists (individual toggles)
+	enableBullet: boolean;
 	bulletChar: string;
+	enableCheckbox: boolean;
 	checkboxChecked: string;
 	checkboxUnchecked: string;
 
-	// Text decoration
+	// Text decoration (individual toggles)
 	useBoldUnicode: boolean;
 	useItalicUnicode: boolean;
 	useStrikethrough: boolean;
 
-	// Block elements
+	// Block elements (individual toggles)
+	enableHorizontalRule: boolean;
 	horizontalRule: string;
+	enableBlockquote: boolean;
 	blockquotePrefix: string;
 
-	// Code
+	// Code (individual toggles)
+	enableCodeBlock: boolean;
 	codeBlockPrefix: string;
+	enableInlineCode: boolean;
 	inlineCodeWrapper: string;
 
 	// Custom rules (applied after markdown conversion)
@@ -84,22 +86,20 @@ export interface MarkdownConversionSettings {
 // =============================================================================
 
 export const DEFAULT_SETTINGS: MarkdownConversionSettings = {
-	// Section toggles
+	// Master toggle
 	enableMarkdownConversion: true,
-	enableHeadings: true,
-	enableLists: true,
-	enableTextDecoration: true,
-	enableBlockElements: true,
-	enableCode: true,
 
-	// Headings - Unicode block characters for visual hierarchy
+	// Headings
+	enableHeadings: true,
 	heading1Prefix: "▌",
 	heading2Prefix: "▍",
 	heading3Prefix: "▎",
 	heading4Prefix: "▏",
 
 	// Lists
+	enableBullet: true,
 	bulletChar: "•",
+	enableCheckbox: true,
 	checkboxChecked: "☑",
 	checkboxUnchecked: "☐",
 
@@ -109,11 +109,15 @@ export const DEFAULT_SETTINGS: MarkdownConversionSettings = {
 	useStrikethrough: true,
 
 	// Block elements
+	enableHorizontalRule: true,
 	horizontalRule: "────────────",
+	enableBlockquote: true,
 	blockquotePrefix: "│ ",
 
 	// Code
+	enableCodeBlock: true,
 	codeBlockPrefix: "  ",
+	enableInlineCode: true,
 	inlineCodeWrapper: "`",
 
 	// Default custom rules for checkbox variants not recognized by marked
