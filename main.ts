@@ -1,4 +1,14 @@
+/**
+ * Obsidian plugin: Markdown to Plain Text
+ * Converts markdown content to Unicode-formatted plain text with customizable presets.
+ */
+
 import { type Editor, Notice, Plugin } from "obsidian";
+import {
+	FILE_FILTERS,
+	generateDefaultFileName,
+	saveToFile,
+} from "./src/file-utils";
 import { convertMarkdownToPlainText } from "./src/markdown-converter";
 import {
 	DEFAULT_SETTINGS,
@@ -8,57 +18,46 @@ import {
 	SettingTab,
 } from "./src/settings";
 
-const { remote } = require("electron");
-// biome-ignore lint/style/useNodejsImportProtocol: Obsidian plugin bundler doesn't support node: protocol
-const fs = require("fs");
+// =============================================================================
+// Plugin Class
+// =============================================================================
 
 export default class SelectionToFilePlugin extends Plugin {
 	pluginSettings: PluginSettings;
 	private presetCommandIds: string[] = [];
 
+	// ===========================================================================
+	// Lifecycle
+	// ===========================================================================
+
 	async onload() {
 		await this.loadSettings();
 		this.addSettingTab(new SettingTab(this.app, this));
+		this.registerCommands();
+	}
 
-		// Original command: Save as file (raw markdown)
+	onunload() {}
+
+	// ===========================================================================
+	// Command Registration
+	// ===========================================================================
+
+	private registerCommands(): void {
+		// Raw markdown save command
 		this.addCommand({
 			id: "save-selection-to-file",
 			name: "Save selection as file...",
 			editorCallback: async (editor: Editor) => {
-				const selection = editor.getSelection();
-				const content = selection || this.getContentWithoutFrontmatter(editor);
-
-				const defaultFileName = this.generateDefaultFileName(content);
-
-				const result = await remote.dialog.showSaveDialog({
+				const content = this.getEditorContent(editor);
+				await saveToFile(content, {
 					title: "Save selection to file",
-					defaultPath: defaultFileName,
-					filters: [
-						{ name: "Markdown", extensions: ["md"] },
-						{ name: "Text", extensions: ["txt"] },
-						{ name: "All Files", extensions: ["*"] },
-					],
+					defaultPath: generateDefaultFileName(content),
+					filters: FILE_FILTERS.markdown,
 				});
-
-				if (result.canceled || !result.filePath) {
-					return;
-				}
-
-				fs.writeFile(
-					result.filePath,
-					content,
-					(err: NodeJS.ErrnoException | null) => {
-						if (err) {
-							new Notice(`Error: ${err.message}`);
-						} else {
-							new Notice(`Saved: ${result.filePath}`);
-						}
-					},
-				);
 			},
 		});
 
-		// Register preset-based commands
+		// Preset-based commands
 		this.registerPresetCommands();
 	}
 
@@ -72,74 +71,57 @@ export default class SelectionToFilePlugin extends Plugin {
 
 		// Register commands for each preset
 		for (const preset of this.pluginSettings.presets) {
-			// Copy command
-			const copyId = `copy-plain-text-${preset.id}`;
-			this.addCommand({
-				id: copyId,
-				name: `${preset.name} (copy)`,
-				editorCallback: async (editor: Editor) => {
-					const selection = editor.getSelection();
-					const content =
-						selection || this.getContentWithoutFrontmatter(editor);
-
-					const converted = convertMarkdownToPlainText(
-						content,
-						preset.settings,
-					);
-					await navigator.clipboard.writeText(converted);
-					new Notice(
-						selection
-							? `Copied with "${preset.name}"`
-							: `Copied entire file with "${preset.name}"`,
-					);
-				},
-			});
-			this.presetCommandIds.push(copyId);
-
-			// Save command
-			const saveId = `save-plain-text-${preset.id}`;
-			this.addCommand({
-				id: saveId,
-				name: `${preset.name} (save)`,
-				editorCallback: async (editor: Editor) => {
-					const selection = editor.getSelection();
-					const content =
-						selection || this.getContentWithoutFrontmatter(editor);
-
-					const converted = convertMarkdownToPlainText(
-						content,
-						preset.settings,
-					);
-					const defaultFileName = this.generateDefaultFileName(content, "txt");
-
-					const result = await remote.dialog.showSaveDialog({
-						title: `Save as plain text (${preset.name})`,
-						defaultPath: defaultFileName,
-						filters: [
-							{ name: "Text", extensions: ["txt"] },
-							{ name: "All Files", extensions: ["*"] },
-						],
-					});
-
-					if (result.canceled || !result.filePath) {
-						return;
-					}
-
-					fs.writeFile(
-						result.filePath,
-						converted,
-						(err: NodeJS.ErrnoException | null) => {
-							if (err) {
-								new Notice(`Error: ${err.message}`);
-							} else {
-								new Notice(`Saved: ${result.filePath}`);
-							}
-						},
-					);
-				},
-			});
-			this.presetCommandIds.push(saveId);
+			this.registerPresetCopyCommand(preset);
+			this.registerPresetSaveCommand(preset);
 		}
+	}
+
+	private registerPresetCopyCommand(preset: Preset): void {
+		const copyId = `copy-plain-text-${preset.id}`;
+		this.addCommand({
+			id: copyId,
+			name: `${preset.name} (copy)`,
+			editorCallback: async (editor: Editor) => {
+				const content = this.getEditorContent(editor);
+				const converted = convertMarkdownToPlainText(content, preset.settings);
+
+				await navigator.clipboard.writeText(converted);
+				new Notice(
+					editor.getSelection()
+						? `Copied with "${preset.name}"`
+						: `Copied entire file with "${preset.name}"`,
+				);
+			},
+		});
+		this.presetCommandIds.push(copyId);
+	}
+
+	private registerPresetSaveCommand(preset: Preset): void {
+		const saveId = `save-plain-text-${preset.id}`;
+		this.addCommand({
+			id: saveId,
+			name: `${preset.name} (save)`,
+			editorCallback: async (editor: Editor) => {
+				const content = this.getEditorContent(editor);
+				const converted = convertMarkdownToPlainText(content, preset.settings);
+
+				await saveToFile(converted, {
+					title: `Save as plain text (${preset.name})`,
+					defaultPath: generateDefaultFileName(content, "txt"),
+					filters: FILE_FILTERS.text,
+				});
+			},
+		});
+		this.presetCommandIds.push(saveId);
+	}
+
+	// ===========================================================================
+	// Content Extraction
+	// ===========================================================================
+
+	private getEditorContent(editor: Editor): string {
+		const selection = editor.getSelection();
+		return selection || this.getContentWithoutFrontmatter(editor);
 	}
 
 	private getContentWithoutFrontmatter(editor: Editor): string {
@@ -158,27 +140,25 @@ export default class SelectionToFilePlugin extends Plugin {
 			.trimStart();
 	}
 
-	private generateDefaultFileName(content: string, ext: string = "md"): string {
-		const timestamp = new Date()
-			.toISOString()
-			.replace(/[:.]/g, "-")
-			.slice(0, 19);
-		const firstLine = content.split("\n")[0].trim();
-		const sanitized = firstLine.replace(/[<>:"/\\|?*#]/g, "").slice(0, 30);
-
-		if (sanitized.length > 0) {
-			return `${sanitized}.${ext}`;
-		}
-		return `export_${timestamp}.${ext}`;
-	}
+	// ===========================================================================
+	// Settings Persistence
+	// ===========================================================================
 
 	async loadSettings() {
 		const data = await this.loadData();
 		await this.migrateSettings(data);
 	}
 
+	async saveSettings() {
+		await this.saveData(this.pluginSettings);
+	}
+
+	// ===========================================================================
+	// Settings Migration
+	// ===========================================================================
+
 	private async migrateSettings(data: unknown) {
-		// If no data, create default preset
+		// No data - create default preset
 		if (!data) {
 			this.pluginSettings = {
 				presets: [
@@ -195,11 +175,11 @@ export default class SelectionToFilePlugin extends Plugin {
 
 		const d = data as Record<string, unknown>;
 
-		// If already has presets array, use it
+		// Current format - has presets array
 		if (Array.isArray(d.presets)) {
 			this.pluginSettings = data as PluginSettings;
 
-			// Migrate individual preset settings
+			// Migrate individual preset settings if needed
 			let needsSave = false;
 			for (const preset of this.pluginSettings.presets) {
 				if (this.migratePresetSettings(preset)) {
@@ -213,25 +193,11 @@ export default class SelectionToFilePlugin extends Plugin {
 			return;
 		}
 
-		// Old format: single settings object -> migrate to preset
+		// Old format - single settings object, migrate to preset
 		const oldSettings = Object.assign({}, DEFAULT_SETTINGS, data);
-
-		// Migrate old rule properties
-		if (oldSettings.customRules) {
-			for (const rule of oldSettings.customRules) {
-				const r = rule as unknown as Record<string, unknown>;
-				if ("flags" in r) {
-					r.caseInsensitive = String(r.flags).includes("i");
-					delete r.flags;
-				}
-				if ("global" in r) {
-					delete r.global;
-				}
-				if (!("name" in r)) {
-					r.name = "";
-				}
-			}
-		}
+		this.migrateOldRuleProperties(
+			oldSettings as unknown as Record<string, unknown>,
+		);
 
 		this.pluginSettings = {
 			presets: [
@@ -278,9 +244,20 @@ export default class SelectionToFilePlugin extends Plugin {
 		return needsSave;
 	}
 
-	async saveSettings() {
-		await this.saveData(this.pluginSettings);
-	}
+	private migrateOldRuleProperties(settings: Record<string, unknown>): void {
+		if (!settings.customRules) return;
 
-	onunload() {}
+		for (const rule of settings.customRules as Record<string, unknown>[]) {
+			if ("flags" in rule) {
+				rule.caseInsensitive = String(rule.flags).includes("i");
+				delete rule.flags;
+			}
+			if ("global" in rule) {
+				delete rule.global;
+			}
+			if (!("name" in rule)) {
+				rule.name = "";
+			}
+		}
+	}
 }

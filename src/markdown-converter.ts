@@ -1,11 +1,25 @@
+/**
+ * Markdown to plain text converter using the marked library.
+ * Converts markdown syntax to Unicode-formatted plain text.
+ */
+
 import { Lexer, type Token, type Tokens } from "marked";
 import type { CustomRule, MarkdownConversionSettings } from "./types";
+
+// =============================================================================
+// Types
+// =============================================================================
 
 interface RenderContext {
 	settings: MarkdownConversionSettings;
 	listDepth: number;
 }
 
+// =============================================================================
+// Main Entry Point
+// =============================================================================
+
+/** Convert markdown text to plain text with Unicode formatting */
 export function convertMarkdownToPlainText(
 	markdown: string,
 	settings: MarkdownConversionSettings,
@@ -18,34 +32,16 @@ export function convertMarkdownToPlainText(
 	const lexer = new Lexer();
 	const tokens = lexer.lex(markdown);
 	const ctx: RenderContext = { settings, listDepth: 0 };
+
 	let result = renderTokens(tokens, ctx);
 	result = applyCustomRules(result, settings.customRules);
+
 	return result;
 }
 
-function applyCustomRules(text: string, rules: CustomRule[]): string {
-	let result = text;
-	for (const rule of rules) {
-		if (!rule.enabled) continue;
-		try {
-			const flags = rule.caseInsensitive ? "gmi" : "gm";
-			const regex = new RegExp(rule.pattern, flags);
-			const replacement = unescapeString(rule.replacement);
-			result = result.replace(regex, replacement);
-		} catch {
-			console.warn(`Invalid custom rule pattern: ${rule.pattern}`);
-		}
-	}
-	return result;
-}
-
-function unescapeString(str: string): string {
-	return str
-		.replace(/\\n/g, "\n")
-		.replace(/\\t/g, "\t")
-		.replace(/\\r/g, "\r")
-		.replace(/\\\\/g, "\\");
-}
+// =============================================================================
+// Token Rendering - Core
+// =============================================================================
 
 function renderTokens(tokens: Token[], ctx: RenderContext): string {
 	return tokens.map((token) => renderToken(token, ctx)).join("");
@@ -59,8 +55,6 @@ function renderToken(token: Token, ctx: RenderContext): string {
 			return renderParagraph(token as Tokens.Paragraph, ctx);
 		case "text":
 			return renderText(token as Tokens.Text, ctx);
-		case "checkbox":
-			return ""; // Handled by getBullet in list items
 		case "strong":
 			return renderStrong(token as Tokens.Strong, ctx);
 		case "em":
@@ -86,6 +80,8 @@ function renderToken(token: Token, ctx: RenderContext): string {
 		case "br":
 		case "space":
 			return "\n";
+		case "checkbox":
+			return ""; // Handled by getBullet in list items
 		case "html":
 			return (token as Tokens.HTML).raw;
 		case "escape":
@@ -95,11 +91,17 @@ function renderToken(token: Token, ctx: RenderContext): string {
 	}
 }
 
+// =============================================================================
+// Token Rendering - Headings
+// =============================================================================
+
 function renderHeading(token: Tokens.Heading, ctx: RenderContext): string {
 	const text = renderTokens(token.tokens, ctx);
+
 	if (!ctx.settings.enableHeadings) {
 		return `${text}\n`;
 	}
+
 	const prefixes: Record<number, string> = {
 		1: ctx.settings.heading1Prefix,
 		2: ctx.settings.heading2Prefix,
@@ -107,8 +109,13 @@ function renderHeading(token: Tokens.Heading, ctx: RenderContext): string {
 		4: ctx.settings.heading4Prefix,
 	};
 	const prefix = prefixes[token.depth] || "";
+
 	return `${prefix} ${text}\n`;
 }
+
+// =============================================================================
+// Token Rendering - Text & Paragraphs
+// =============================================================================
 
 function renderParagraph(token: Tokens.Paragraph, ctx: RenderContext): string {
 	return `${renderTokens(token.tokens, ctx)}\n`;
@@ -117,6 +124,10 @@ function renderParagraph(token: Tokens.Paragraph, ctx: RenderContext): string {
 function renderText(token: Tokens.Text, ctx: RenderContext): string {
 	return token.tokens ? renderTokens(token.tokens, ctx) : token.text;
 }
+
+// =============================================================================
+// Token Rendering - Text Decoration (Bold, Italic, Strikethrough)
+// =============================================================================
 
 function renderStrong(token: Tokens.Strong, ctx: RenderContext): string {
 	const text = renderTokens(token.tokens, ctx);
@@ -136,6 +147,10 @@ function renderDel(token: Tokens.Del, ctx: RenderContext): string {
 	return ctx.settings.useStrikethrough ? convertToStrikethrough(text) : text;
 }
 
+// =============================================================================
+// Token Rendering - Code
+// =============================================================================
+
 function renderCodespan(token: Tokens.Codespan, ctx: RenderContext): string {
 	if (!ctx.settings.enableCode) return token.text;
 	const w = ctx.settings.inlineCodeWrapper;
@@ -150,20 +165,30 @@ function renderCode(token: Tokens.Code, ctx: RenderContext): string {
 		.join("\n")}\n`;
 }
 
+// =============================================================================
+// Token Rendering - Block Elements
+// =============================================================================
+
 function renderBlockquote(
 	token: Tokens.Blockquote,
 	ctx: RenderContext,
 ): string {
 	const content = renderTokens(token.tokens, ctx);
+
 	if (!ctx.settings.enableBlockElements) {
 		return content;
 	}
+
 	const prefix = ctx.settings.blockquotePrefix;
 	return content
 		.split("\n")
 		.map((line) => (line ? prefix + line : line))
 		.join("\n");
 }
+
+// =============================================================================
+// Token Rendering - Lists
+// =============================================================================
 
 function renderList(token: Tokens.List, ctx: RenderContext): string {
 	return token.items
@@ -201,6 +226,7 @@ function renderListItem(
 
 	const indent = "  ".repeat(listDepth);
 	const bullet = getBullet(token, settings, ordered, index);
+
 	return `${indent}${bullet} ${content}\n${nested}`;
 }
 
@@ -221,6 +247,10 @@ function getBullet(
 	return ordered ? `${index + 1}.` : settings.bulletChar;
 }
 
+// =============================================================================
+// Token Rendering - Links & Images
+// =============================================================================
+
 function renderLink(token: Tokens.Link, ctx: RenderContext): string {
 	return renderTokens(token.tokens, ctx);
 }
@@ -229,17 +259,23 @@ function renderImage(token: Tokens.Image): string {
 	return token.text || "";
 }
 
-// Unicode conversion functions
+// =============================================================================
+// Unicode Text Conversion
+// =============================================================================
 
+/** Convert ASCII text to mathematical bold Unicode characters */
 function convertToBoldUnicode(text: string): string {
 	return [...text]
 		.map((char) => {
 			const code = char.codePointAt(0);
 			if (code === undefined) return char;
+			// A-Z → 𝐀-𝐙
 			if (code >= 65 && code <= 90)
 				return String.fromCodePoint(code - 65 + 0x1d400);
+			// a-z → 𝐚-𝐳
 			if (code >= 97 && code <= 122)
 				return String.fromCodePoint(code - 97 + 0x1d41a);
+			// 0-9 → 𝟎-𝟗
 			if (code >= 48 && code <= 57)
 				return String.fromCodePoint(code - 48 + 0x1d7ce);
 			return char;
@@ -247,13 +283,16 @@ function convertToBoldUnicode(text: string): string {
 		.join("");
 }
 
+/** Convert ASCII text to mathematical italic Unicode characters */
 function convertToItalicUnicode(text: string): string {
 	return [...text]
 		.map((char) => {
 			const code = char.codePointAt(0);
 			if (code === undefined) return char;
+			// A-Z → 𝐴-𝑍
 			if (code >= 65 && code <= 90)
 				return String.fromCodePoint(code - 65 + 0x1d434);
+			// a-z → 𝑎-𝑧
 			if (code >= 97 && code <= 122)
 				return String.fromCodePoint(code - 97 + 0x1d44e);
 			return char;
@@ -261,6 +300,40 @@ function convertToItalicUnicode(text: string): string {
 		.join("");
 }
 
+/** Add strikethrough combining character to each character */
 function convertToStrikethrough(text: string): string {
 	return [...text].map((char) => `${char}\u0336`).join("");
+}
+
+// =============================================================================
+// Custom Rules Processing
+// =============================================================================
+
+/** Apply user-defined regex replacement rules */
+function applyCustomRules(text: string, rules: CustomRule[]): string {
+	let result = text;
+
+	for (const rule of rules) {
+		if (!rule.enabled) continue;
+
+		try {
+			const flags = rule.caseInsensitive ? "gmi" : "gm";
+			const regex = new RegExp(rule.pattern, flags);
+			const replacement = unescapeString(rule.replacement);
+			result = result.replace(regex, replacement);
+		} catch {
+			console.warn(`Invalid custom rule pattern: ${rule.pattern}`);
+		}
+	}
+
+	return result;
+}
+
+/** Convert escape sequences in replacement strings */
+function unescapeString(str: string): string {
+	return str
+		.replace(/\\n/g, "\n")
+		.replace(/\\t/g, "\t")
+		.replace(/\\r/g, "\r")
+		.replace(/\\\\/g, "\\");
 }
