@@ -14,7 +14,8 @@
 		"lint:fix": "biome check --write .",
 		"format": "biome format --write .",
 		"install:vault": "./scripts/deploy.sh",
-		"uninstall:vault": "./scripts/undeploy.sh"
+		"uninstall:vault": "./scripts/undeploy.sh",
+		"release": "./scripts/release.sh"
 	},
 	"keywords": [],
 	"author": "o2c",

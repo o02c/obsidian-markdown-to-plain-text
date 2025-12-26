@@ -30,18 +30,15 @@ jobs:
       - name: Build plugin
         run: pnpm run build
 
-      - name: Update manifest version
+      - name: Verify version match
         run: |
           tag="${GITHUB_REF#refs/tags/}"
-          jq --arg version "$tag" '.version = $version' manifest.json > temp.json && mv temp.json manifest.json
-
-      - name: Commit updated manifest
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add manifest.json
-          git commit -m "chore: update manifest version to ${{ github.ref_name }}"
-          git push origin HEAD:main
+          manifest_version=$(jq -r '.version' manifest.json)
+          if [ "$tag" != "$manifest_version" ]; then
+            echo "::error::Version mismatch: tag=$tag, manifest.json=$manifest_version"
+            echo "Run: pnpm release $tag"
+            exit 1
+          fi
 
       - name: Create and publish release
         env:
