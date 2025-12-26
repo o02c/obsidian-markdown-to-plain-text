@@ -518,6 +518,80 @@ describe("convertMarkdownToPlainText", () => {
 			expect(result).toContain("foo");
 			expect(result).toContain("FOO");
 		});
+
+		it("applies rule before markdown conversion when applyBeforeConversion is true", () => {
+			// Replace **bold** with REPLACED before markdown processing
+			// So markdown won't convert it to unicode bold
+			const settings = {
+				...DEFAULT_SETTINGS,
+				customRules: [
+					{
+						name: "replace bold syntax",
+						pattern: "\\*\\*bold\\*\\*",
+						replacement: "REPLACED",
+						caseInsensitive: false,
+						enabled: true,
+						applyBeforeConversion: true,
+					},
+				],
+			};
+			const result = convertMarkdownToPlainText("**bold**", settings);
+			expect(result.trim()).toBe("REPLACED");
+			// Should NOT contain unicode bold since we replaced before conversion
+			expect(result).not.toContain("𝐛𝐨𝐥𝐝");
+		});
+
+		it("applies rule after markdown conversion by default", () => {
+			// Without applyBeforeConversion, rule runs after conversion
+			// So **bold** becomes unicode bold first, then rule won't match
+			const settings = {
+				...DEFAULT_SETTINGS,
+				customRules: [
+					{
+						name: "replace bold syntax",
+						pattern: "\\*\\*bold\\*\\*",
+						replacement: "REPLACED",
+						caseInsensitive: false,
+						enabled: true,
+						// applyBeforeConversion defaults to false
+					},
+				],
+			};
+			const result = convertMarkdownToPlainText("**bold**", settings);
+			// Should contain unicode bold since rule ran after conversion
+			expect(result).toContain("𝐛𝐨𝐥𝐝");
+			expect(result).not.toContain("REPLACED");
+		});
+
+		it("applies before and after rules in correct order", () => {
+			const settings = {
+				...DEFAULT_SETTINGS,
+				customRules: [
+					{
+						name: "after rule",
+						pattern: "𝐛𝐨𝐥𝐝",
+						replacement: "AFTER",
+						caseInsensitive: false,
+						enabled: true,
+						applyBeforeConversion: false,
+					},
+					{
+						name: "before rule",
+						pattern: "\\*italic\\*",
+						replacement: "BEFORE",
+						caseInsensitive: false,
+						enabled: true,
+						applyBeforeConversion: true,
+					},
+				],
+			};
+			const result = convertMarkdownToPlainText("**bold** and *italic*", settings);
+			// "*italic*" replaced before conversion, so no italic processing
+			expect(result).toContain("BEFORE");
+			expect(result).not.toContain("𝑖𝑡𝑎𝑙𝑖𝑐");
+			// bold converted to unicode, then replaced by after rule
+			expect(result).toContain("AFTER");
+		});
 	});
 
 	describe("Section toggles", () => {

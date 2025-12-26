@@ -42,6 +42,7 @@ export function renderCustomRulesSection(
 				replacement: "",
 				caseInsensitive: true,
 				enabled: true,
+				applyBeforeConversion: false,
 			});
 			await callbacks.saveSettings();
 			callbacks.refreshDisplay();

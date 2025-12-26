@@ -134,6 +134,19 @@ export class RuleEditorModal extends Modal {
 				}),
 			);
 
+		// Apply before conversion toggle
+		new Setting(contentEl)
+			.setName("Apply before conversion")
+			.setDesc("Run this rule before markdown conversion (default: after)")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.rule.applyBeforeConversion ?? false)
+					.onChange(async (value) => {
+						this.rule.applyBeforeConversion = value;
+						await this.onSaveCallback();
+					}),
+			);
+
 		// Documentation link
 		const docLink = contentEl.createEl("p", {
 			cls: "setting-item-description",
