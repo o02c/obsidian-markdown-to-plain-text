@@ -125,15 +125,15 @@ export const DEFAULT_SETTINGS: MarkdownConversionSettings = {
 	customRules: [
 		{
 			name: "In-progress checkbox",
-			pattern: "• \\[/\\] ?",
-			replacement: "◐ ",
+			pattern: "^(\\s*)• \\[/\\] ?",
+			replacement: "$1◐ ",
 			caseInsensitive: true,
 			enabled: true,
 		},
 		{
 			name: "Cancelled checkbox",
-			pattern: "• \\[-\\] ?",
-			replacement: "☒ ",
+			pattern: "^(\\s*)• \\[-\\] ?",
+			replacement: "$1☒ ",
 			caseInsensitive: true,
 			enabled: true,
 		},
