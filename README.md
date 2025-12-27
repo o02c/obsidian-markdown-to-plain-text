@@ -78,10 +78,10 @@ This plugin does not transmit any user data externally. All data is kept locally
 
 For questions or issues, please use the [GitHub Issues](https://github.com/o02c/obsidian-markdown-to-plain-text/issues) page. Feedback and feature requests are welcome.
 
-If you find this plugin useful, consider supporting development:
-
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/o02c?style=social)](https://github.com/sponsors/o02c)
+
 [![PayPal](https://img.shields.io/badge/paypal-o02c-yellow?style=social&logo=paypal)](https://paypal.me/o02c)
+
 [<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="BuyMeACoffee" width="100">](https://www.buymeacoffee.com/_o2c)
 
 ## License
