@@ -32,8 +32,7 @@ Preset commands are dynamically generated for each preset you create in settings
 ## Conversion Options
 
 ### Headings
-- Custom prefix characters for each heading level
-  - h1: `▌`, h2: `▍`, h3: `▎`, h4: `▏`
+- Custom prefix characters for each heading level (defaults: h1: `▌`, h2: `▍`, h3: `▎`, h4: `▏`)
 
 ### Lists
 - Bullet character customization (default: `•`)
@@ -83,7 +82,7 @@ For questions or issues, please use the [GitHub Issues](https://github.com/o02c/
 
 [![PayPal](https://img.shields.io/badge/paypal-o02c-yellow?style=social&logo=paypal)](https://paypal.me/o02c)
 
-[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="BuyMeACoffee" width="100">](https://www.buymeacoffee.com/o02c)
+[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="BuyMeACoffee" width="100">](https://www.buymeacoffee.com/_o2c)
 
 ## License
 
