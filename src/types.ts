@@ -7,13 +7,14 @@
 // Custom Rule Types
 // =============================================================================
 
-/** Regex-based replacement rule applied after markdown conversion */
+/** Regex-based replacement rule applied before or after markdown conversion */
 export interface CustomRule {
 	name: string;
 	pattern: string;
 	replacement: string;
 	caseInsensitive: boolean;
 	enabled: boolean;
+	applyBeforeConversion?: boolean;
 }
 
 // =============================================================================
@@ -124,15 +125,15 @@ export const DEFAULT_SETTINGS: MarkdownConversionSettings = {
 	customRules: [
 		{
 			name: "In-progress checkbox",
-			pattern: "• \\[/\\] ?",
-			replacement: "◐ ",
+			pattern: "^(\\s*)• \\[/\\] ?",
+			replacement: "$1◐ ",
 			caseInsensitive: true,
 			enabled: true,
 		},
 		{
 			name: "Cancelled checkbox",
-			pattern: "• \\[-\\] ?",
-			replacement: "☒ ",
+			pattern: "^(\\s*)• \\[-\\] ?",
+			replacement: "$1☒ ",
 			caseInsensitive: true,
 			enabled: true,
 		},

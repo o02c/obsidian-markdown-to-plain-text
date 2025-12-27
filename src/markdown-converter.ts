@@ -29,12 +29,25 @@ export function convertMarkdownToPlainText(
 		return markdown;
 	}
 
-	const lexer = new Lexer();
-	const tokens = lexer.lex(markdown);
-	const ctx: RenderContext = { settings, listDepth: 0 };
+	// Separate before and after rules
+	const beforeRules = settings.customRules.filter(
+		(r) => r.applyBeforeConversion === true,
+	);
+	const afterRules = settings.customRules.filter(
+		(r) => r.applyBeforeConversion !== true,
+	);
 
+	// Apply before rules
+	let text = applyCustomRules(markdown, beforeRules);
+
+	// Markdown conversion
+	const lexer = new Lexer();
+	const tokens = lexer.lex(text);
+	const ctx: RenderContext = { settings, listDepth: 0 };
 	let result = renderTokens(tokens, ctx);
-	result = applyCustomRules(result, settings.customRules);
+
+	// Apply after rules
+	result = applyCustomRules(result, afterRules);
 
 	return result;
 }
