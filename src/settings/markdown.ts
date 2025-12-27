@@ -128,17 +128,13 @@ export function renderListsSection(
 	addIconToSetting(listSetting, "list");
 
 	// Bullet character subsection
-	new Setting(container)
-		.setName("Bullet character")
-		.addToggle((toggle) =>
-			toggle
-				.setValue(preset.settings.enableBullet)
-				.onChange(async (value) => {
-					preset.settings.enableBullet = value;
-					await callbacks.saveSettings();
-					callbacks.refreshDisplay();
-				}),
-		);
+	new Setting(container).setName("Bullet character").addToggle((toggle) =>
+		toggle.setValue(preset.settings.enableBullet).onChange(async (value) => {
+			preset.settings.enableBullet = value;
+			await callbacks.saveSettings();
+			callbacks.refreshDisplay();
+		}),
+	);
 
 	if (preset.settings.enableBullet) {
 		new Setting(container)
@@ -155,17 +151,13 @@ export function renderListsSection(
 	}
 
 	// Checkbox subsection
-	new Setting(container)
-		.setName("Checkbox")
-		.addToggle((toggle) =>
-			toggle
-				.setValue(preset.settings.enableCheckbox)
-				.onChange(async (value) => {
-					preset.settings.enableCheckbox = value;
-					await callbacks.saveSettings();
-					callbacks.refreshDisplay();
-				}),
-		);
+	new Setting(container).setName("Checkbox").addToggle((toggle) =>
+		toggle.setValue(preset.settings.enableCheckbox).onChange(async (value) => {
+			preset.settings.enableCheckbox = value;
+			await callbacks.saveSettings();
+			callbacks.refreshDisplay();
+		}),
+	);
 
 	if (preset.settings.enableCheckbox) {
 		new Setting(container)
@@ -269,17 +261,15 @@ export function renderBlockElementsSection(
 	addIconToSetting(blockSetting, "text-quote");
 
 	// Horizontal rule subsection
-	new Setting(container)
-		.setName("Horizontal rule")
-		.addToggle((toggle) =>
-			toggle
-				.setValue(preset.settings.enableHorizontalRule)
-				.onChange(async (value) => {
-					preset.settings.enableHorizontalRule = value;
-					await callbacks.saveSettings();
-					callbacks.refreshDisplay();
-				}),
-		);
+	new Setting(container).setName("Horizontal rule").addToggle((toggle) =>
+		toggle
+			.setValue(preset.settings.enableHorizontalRule)
+			.onChange(async (value) => {
+				preset.settings.enableHorizontalRule = value;
+				await callbacks.saveSettings();
+				callbacks.refreshDisplay();
+			}),
+	);
 
 	if (preset.settings.enableHorizontalRule) {
 		new Setting(container)
@@ -296,17 +286,15 @@ export function renderBlockElementsSection(
 	}
 
 	// Blockquote subsection
-	new Setting(container)
-		.setName("Blockquote")
-		.addToggle((toggle) =>
-			toggle
-				.setValue(preset.settings.enableBlockquote)
-				.onChange(async (value) => {
-					preset.settings.enableBlockquote = value;
-					await callbacks.saveSettings();
-					callbacks.refreshDisplay();
-				}),
-		);
+	new Setting(container).setName("Blockquote").addToggle((toggle) =>
+		toggle
+			.setValue(preset.settings.enableBlockquote)
+			.onChange(async (value) => {
+				preset.settings.enableBlockquote = value;
+				await callbacks.saveSettings();
+				callbacks.refreshDisplay();
+			}),
+	);
 
 	if (preset.settings.enableBlockquote) {
 		new Setting(container)
@@ -339,17 +327,13 @@ export function renderCodeSection(
 	addIconToSetting(codeSetting, "code");
 
 	// Code block subsection
-	new Setting(container)
-		.setName("Code block")
-		.addToggle((toggle) =>
-			toggle
-				.setValue(preset.settings.enableCodeBlock)
-				.onChange(async (value) => {
-					preset.settings.enableCodeBlock = value;
-					await callbacks.saveSettings();
-					callbacks.refreshDisplay();
-				}),
-		);
+	new Setting(container).setName("Code block").addToggle((toggle) =>
+		toggle.setValue(preset.settings.enableCodeBlock).onChange(async (value) => {
+			preset.settings.enableCodeBlock = value;
+			await callbacks.saveSettings();
+			callbacks.refreshDisplay();
+		}),
+	);
 
 	if (preset.settings.enableCodeBlock) {
 		new Setting(container)
@@ -366,17 +350,15 @@ export function renderCodeSection(
 	}
 
 	// Inline code subsection
-	new Setting(container)
-		.setName("Inline code")
-		.addToggle((toggle) =>
-			toggle
-				.setValue(preset.settings.enableInlineCode)
-				.onChange(async (value) => {
-					preset.settings.enableInlineCode = value;
-					await callbacks.saveSettings();
-					callbacks.refreshDisplay();
-				}),
-		);
+	new Setting(container).setName("Inline code").addToggle((toggle) =>
+		toggle
+			.setValue(preset.settings.enableInlineCode)
+			.onChange(async (value) => {
+				preset.settings.enableInlineCode = value;
+				await callbacks.saveSettings();
+				callbacks.refreshDisplay();
+			}),
+	);
 
 	if (preset.settings.enableInlineCode) {
 		new Setting(container)

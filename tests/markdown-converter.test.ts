@@ -585,7 +585,10 @@ describe("convertMarkdownToPlainText", () => {
 					},
 				],
 			};
-			const result = convertMarkdownToPlainText("**bold** and *italic*", settings);
+			const result = convertMarkdownToPlainText(
+				"**bold** and *italic*",
+				settings,
+			);
 			// "*italic*" replaced before conversion, so no italic processing
 			expect(result).toContain("BEFORE");
 			expect(result).not.toContain("𝑖𝑡𝑎𝑙𝑖𝑐");

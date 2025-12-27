@@ -38,7 +38,7 @@ export function convertMarkdownToPlainText(
 	);
 
 	// Apply before rules
-	let text = applyCustomRules(markdown, beforeRules);
+	const text = applyCustomRules(markdown, beforeRules);
 
 	// Markdown conversion
 	const lexer = new Lexer();
