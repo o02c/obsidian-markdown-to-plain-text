@@ -9,7 +9,7 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 # Get plugin ID from manifest.json and append -dev suffix
-PLUGIN_ID=$(node -e "console.log(require('./manifest.json').id)" 2>/dev/null || echo "")
+PLUGIN_ID=$(node -e "console.log(require('$SCRIPT_DIR/manifest.json').id)" 2>/dev/null || echo "")
 if [ -z "$PLUGIN_ID" ]; then
     echo "Error: Could not read plugin ID from manifest.json"
     exit 1
@@ -24,7 +24,7 @@ cp "$SCRIPT_DIR/main.js" "$PLUGIN_DIR/"
 
 # Create modified manifest with -dev suffix in ID
 node -e "
-const manifest = require('./manifest.json');
+const manifest = require('$SCRIPT_DIR/manifest.json');
 manifest.id = '${DEV_PLUGIN_ID}';
 manifest.name = manifest.name + ' (Dev)';
 console.log(JSON.stringify(manifest, null, 2));

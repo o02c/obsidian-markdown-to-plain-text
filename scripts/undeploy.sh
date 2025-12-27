@@ -9,7 +9,7 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 # Get plugin ID from manifest.json and append -dev suffix
-PLUGIN_ID=$(node -e "console.log(require('./manifest.json').id)" 2>/dev/null || echo "")
+PLUGIN_ID=$(node -e "console.log(require('$SCRIPT_DIR/manifest.json').id)" 2>/dev/null || echo "")
 if [ -z "$PLUGIN_ID" ]; then
     echo "Error: Could not read plugin ID from manifest.json"
     exit 1
