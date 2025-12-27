@@ -24,6 +24,8 @@ Convert Markdown to plain text with Unicode formatting and custom regex rules.
 
 ## Commands
 
+All commands work with selected text, or the entire file (excluding frontmatter) when no selection is made.
+
 | Command | Description |
 | ------- | ----------- |
 | `Save selection as file...` | Save raw markdown to file (no conversion) |
