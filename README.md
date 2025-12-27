@@ -21,15 +21,13 @@ Copy converted text to clipboard or save directly to a file.
 
 ## Commands
 
-For each preset, two commands are available:
-
 | Command | Description |
 | ------- | ----------- |
-| `{Preset Name} (copy)` | Convert and copy to clipboard |
-| `{Preset Name} (save)` | Convert and save to file |
+| `Save selection as file...` | Save raw markdown to file (no conversion) |
+| `{Preset Name} (copy)` | Convert with preset and copy to clipboard |
+| `{Preset Name} (save)` | Convert with preset and save to file |
 
-Additionally:
-- `Save selection as file...` - Save raw markdown selection to file
+Preset commands are dynamically generated for each preset you create in settings.
 
 ## Conversion Options
 
@@ -76,19 +74,15 @@ Additionally:
 
 This plugin does not transmit any user data externally. All data is kept locally.
 
-## Pricing
+## Support
 
-This plugin is provided to everyone for free, however if you would like to
-say thanks or help support continued development, feel free to send a little
-my way through one of the following methods:
+For questions or issues, please use the [GitHub Issues](https://github.com/o02c/obsidian-markdown-to-plain-text/issues) page. Feedback and feature requests are welcome.
+
+If you find this plugin useful, consider supporting development:
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/o02c?style=social)](https://github.com/sponsors/o02c)
 [![PayPal](https://img.shields.io/badge/paypal-o02c-yellow?style=social&logo=paypal)](https://paypal.me/o02c)
 [<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="BuyMeACoffee" width="100">](https://www.buymeacoffee.com/_o2c)
-
-## Support
-
-For questions or issues, please use the [GitHub Issues](https://github.com/o02c/obsidian-markdown-to-plain-text/issues) page. Feedback and feature requests are welcome.
 
 ## License
 
