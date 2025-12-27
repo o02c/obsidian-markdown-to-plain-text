@@ -6,7 +6,16 @@ if [ -z "$VAULT_PATH" ]; then
     exit 1
 fi
 
-PLUGIN_DIR="$VAULT_PATH/.obsidian/plugins/selection-to-file"
+SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+
+# Get plugin ID from manifest.json and append -dev suffix
+PLUGIN_ID=$(node -e "console.log(require('$SCRIPT_DIR/manifest.json').id)" 2>/dev/null || echo "")
+if [ -z "$PLUGIN_ID" ]; then
+    echo "Error: Could not read plugin ID from manifest.json"
+    exit 1
+fi
+
+PLUGIN_DIR="$VAULT_PATH/.obsidian/plugins/${PLUGIN_ID}-dev"
 
 if [ -d "$PLUGIN_DIR" ]; then
     rm -rf "$PLUGIN_DIR"
