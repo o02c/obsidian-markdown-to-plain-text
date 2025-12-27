@@ -38,10 +38,10 @@ Preset commands are dynamically generated for each preset you create in settings
 - Bullet character customization (default: `•`)
 - Checkbox symbols for checked/unchecked states (default: `☑☐`)
 
-### Text Decoration (enabled by default)
-- Bold text → Mathematical Bold Unicode (𝐁𝐨𝐥𝐝)
-- Italic text → Mathematical Italic Unicode (𝐼𝑡𝑎𝑙𝑖𝑐)
-- Strikethrough → Combining strikethrough character (S̶t̶r̶i̶k̶e̶)
+### Text Decoration
+- Bold text → Mathematical Bold Unicode (𝐁𝐨𝐥𝐝) (default: on)
+- Italic text → Mathematical Italic Unicode (𝐼𝑡𝑎𝑙𝑖𝑐) (default: on)
+- Strikethrough → Combining strikethrough character (S̶t̶r̶i̶k̶e̶) (default: on)
 
 ### Block Elements
 - Horizontal rule replacement (default: `────────────`)
