@@ -19,6 +19,9 @@ Convert Markdown to plain text with Unicode formatting and custom regex rules.
 - **Flexible Output**
   Copy converted text to clipboard or save directly to a file.
 
+- **Selection or Entire File**
+  Works with selected text or the entire file (excluding frontmatter) when no selection is made.
+
 ## Commands
 
 | Command | Description |
