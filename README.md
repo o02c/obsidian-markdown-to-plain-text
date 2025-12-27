@@ -4,20 +4,20 @@ Convert Markdown to plain text with Unicode formatting and custom regex rules.
 
 ## Features
 
-- **Markdown Conversion**: <br>
-Convert markdown syntax to Unicode-formatted plain text.<br>
-Headings become prefixed with `▌▍▎▏`, bold/italic text uses mathematical Unicode characters, and more.
+- **Markdown Conversion**
+  Convert markdown syntax to Unicode-formatted plain text.
+  Headings become prefixed with custom characters, bold/italic text uses mathematical Unicode characters, and more.
 
-- **Multiple Presets**: <br>
-Create and manage multiple conversion presets for different use cases.<br>
-Each preset has its own copy and save commands accessible via command palette.
+- **Multiple Presets**
+  Create and manage multiple conversion presets for different use cases.
+  Each preset has its own copy and save commands accessible via command palette.
 
-- **Custom Regex Rules**: <br>
-Define your own regex replacement rules to customize the conversion output.<br>
-Rules can be applied before or after the markdown conversion.
+- **Custom Regex Rules**
+  Define your own regex replacement rules to customize the conversion output.
+  Rules can be applied before or after the markdown conversion.
 
-- **Flexible Output**: <br>
-Copy converted text to clipboard or save directly to a file.
+- **Flexible Output**
+  Copy converted text to clipboard or save directly to a file.
 
 ## Commands
 
@@ -32,7 +32,8 @@ Preset commands are dynamically generated for each preset you create in settings
 ## Conversion Options
 
 ### Headings
-- Custom prefix characters for h1-h4 (default: `▌▍▎▏`)
+- Custom prefix characters for each heading level
+  - h1: `▌`, h2: `▍`, h3: `▎`, h4: `▏`
 
 ### Lists
 - Bullet character customization (default: `•`)
@@ -82,8 +83,8 @@ For questions or issues, please use the [GitHub Issues](https://github.com/o02c/
 
 [![PayPal](https://img.shields.io/badge/paypal-o02c-yellow?style=social&logo=paypal)](https://paypal.me/o02c)
 
-[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="BuyMeACoffee" width="100">](https://www.buymeacoffee.com/_o2c)
+[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="BuyMeACoffee" width="100">](https://www.buymeacoffee.com/o02c)
 
 ## License
 
-This plugin is released under the MIT License. For more details, please refer to the LICENSE file.
+This plugin is released under the MIT License.
