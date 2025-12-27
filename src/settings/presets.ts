@@ -339,17 +339,15 @@ export function renderPresetEditor(
 	containerEl.createEl("h2", { text: "Markdown Settings" });
 
 	// Markdown settings master toggle
-	new Setting(containerEl)
-		.setName("Enabled")
-		.addToggle((toggle) =>
-			toggle
-				.setValue(preset.settings.enableMarkdownConversion)
-				.onChange(async (value) => {
-					preset.settings.enableMarkdownConversion = value;
-					await callbacks.saveSettings();
-					callbacks.refreshDisplay();
-				}),
-		);
+	new Setting(containerEl).setName("Enabled").addToggle((toggle) =>
+		toggle
+			.setValue(preset.settings.enableMarkdownConversion)
+			.onChange(async (value) => {
+				preset.settings.enableMarkdownConversion = value;
+				await callbacks.saveSettings();
+				callbacks.refreshDisplay();
+			}),
+	);
 
 	if (!preset.settings.enableMarkdownConversion) {
 		return;
