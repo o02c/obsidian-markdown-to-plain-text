@@ -38,7 +38,7 @@ Preset commands are dynamically generated for each preset you create in settings
 - Bullet character customization (default: `•`)
 - Checkbox symbols for checked/unchecked states (default: `☑☐`)
 
-### Text Decoration
+### Text Decoration (enabled by default)
 - Bold text → Mathematical Bold Unicode (𝐁𝐨𝐥𝐝)
 - Italic text → Mathematical Italic Unicode (𝐼𝑡𝑎𝑙𝑖𝑐)
 - Strikethrough → Combining strikethrough character (S̶t̶r̶i̶k̶e̶)
@@ -48,7 +48,7 @@ Preset commands are dynamically generated for each preset you create in settings
 - Blockquote prefix (default: `│ `)
 
 ### Code
-- Code block line prefix (default: `  `)
+- Code block line prefix (default: two spaces)
 - Inline code wrapper (default: `` ` ``)
 
 ## Installation
@@ -86,4 +86,4 @@ For questions or issues, please use the [GitHub Issues](https://github.com/o02c/
 
 ## License
 
-This plugin is released under the MIT License.
+This plugin is released under the [MIT License](LICENSE).
