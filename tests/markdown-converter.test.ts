@@ -151,10 +151,16 @@ describe("convertMarkdownToPlainText", () => {
 			expect(result.trim()).toBe("𝐇𝐞𝐥𝐥𝐨日本語");
 		});
 
-		it("strips bold when disabled", () => {
-			const settings = { ...DEFAULT_SETTINGS, useBoldUnicode: false };
+		it("removes markers when mode is remove", () => {
+			const settings = { ...DEFAULT_SETTINGS, boldMode: "remove" as const };
 			const result = convertMarkdownToPlainText("**Hello**", settings);
 			expect(result.trim()).toBe("Hello");
+		});
+
+		it("keeps markdown when mode is keep", () => {
+			const settings = { ...DEFAULT_SETTINGS, boldMode: "keep" as const };
+			const result = convertMarkdownToPlainText("**Hello**", settings);
+			expect(result.trim()).toBe("**Hello**");
 		});
 	});
 
@@ -169,10 +175,16 @@ describe("convertMarkdownToPlainText", () => {
 			expect(result.trim()).toBe("𝑊𝑜𝑟𝑙𝑑");
 		});
 
-		it("strips italic when disabled", () => {
-			const settings = { ...DEFAULT_SETTINGS, useItalicUnicode: false };
+		it("removes markers when mode is remove", () => {
+			const settings = { ...DEFAULT_SETTINGS, italicMode: "remove" as const };
 			const result = convertMarkdownToPlainText("*Hello*", settings);
 			expect(result.trim()).toBe("Hello");
+		});
+
+		it("keeps markdown when mode is keep", () => {
+			const settings = { ...DEFAULT_SETTINGS, italicMode: "keep" as const };
+			const result = convertMarkdownToPlainText("*Hello*", settings);
+			expect(result.trim()).toBe("*Hello*");
 		});
 	});
 
@@ -182,10 +194,22 @@ describe("convertMarkdownToPlainText", () => {
 			expect(result.trim()).toBe("H̶e̶l̶l̶o̶");
 		});
 
-		it("strips strikethrough when disabled", () => {
-			const settings = { ...DEFAULT_SETTINGS, useStrikethrough: false };
+		it("removes markers when mode is remove", () => {
+			const settings = {
+				...DEFAULT_SETTINGS,
+				strikethroughMode: "remove" as const,
+			};
 			const result = convertMarkdownToPlainText("~~Hello~~", settings);
 			expect(result.trim()).toBe("Hello");
+		});
+
+		it("keeps markdown when mode is keep", () => {
+			const settings = {
+				...DEFAULT_SETTINGS,
+				strikethroughMode: "keep" as const,
+			};
+			const result = convertMarkdownToPlainText("~~Hello~~", settings);
+			expect(result.trim()).toBe("~~Hello~~");
 		});
 	});
 
@@ -616,20 +640,23 @@ describe("convertMarkdownToPlainText", () => {
 			expect(result.trim()).toBe("Done");
 		});
 
-		it("skips bold conversion when useBoldUnicode is false", () => {
-			const settings = { ...DEFAULT_SETTINGS, useBoldUnicode: false };
+		it("removes bold markers when mode is remove", () => {
+			const settings = { ...DEFAULT_SETTINGS, boldMode: "remove" as const };
 			const result = convertMarkdownToPlainText("**bold**", settings);
 			expect(result.trim()).toBe("bold");
 		});
 
-		it("skips italic conversion when useItalicUnicode is false", () => {
-			const settings = { ...DEFAULT_SETTINGS, useItalicUnicode: false };
+		it("removes italic markers when mode is remove", () => {
+			const settings = { ...DEFAULT_SETTINGS, italicMode: "remove" as const };
 			const result = convertMarkdownToPlainText("*italic*", settings);
 			expect(result.trim()).toBe("italic");
 		});
 
-		it("skips strikethrough conversion when useStrikethrough is false", () => {
-			const settings = { ...DEFAULT_SETTINGS, useStrikethrough: false };
+		it("removes strikethrough markers when mode is remove", () => {
+			const settings = {
+				...DEFAULT_SETTINGS,
+				strikethroughMode: "remove" as const,
+			};
 			const result = convertMarkdownToPlainText("~~strike~~", settings);
 			expect(result.trim()).toBe("strike");
 		});

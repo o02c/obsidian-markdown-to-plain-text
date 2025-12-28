@@ -213,6 +213,26 @@ export default class SelectionToFilePlugin extends Plugin {
 
 	private migratePresetSettings(preset: Preset): boolean {
 		let needsSave = false;
+		const s = preset.settings as unknown as Record<string, unknown>;
+
+		// Migrate text decoration booleans to modes
+		if ("useBoldUnicode" in s) {
+			preset.settings.boldMode = s.useBoldUnicode ? "unicode" : "remove";
+			delete s.useBoldUnicode;
+			needsSave = true;
+		}
+		if ("useItalicUnicode" in s) {
+			preset.settings.italicMode = s.useItalicUnicode ? "unicode" : "remove";
+			delete s.useItalicUnicode;
+			needsSave = true;
+		}
+		if ("useStrikethrough" in s) {
+			preset.settings.strikethroughMode = s.useStrikethrough
+				? "unicode"
+				: "remove";
+			delete s.useStrikethrough;
+			needsSave = true;
+		}
 
 		// Add default customRules if empty
 		if (
@@ -245,6 +265,22 @@ export default class SelectionToFilePlugin extends Plugin {
 	}
 
 	private migrateOldRuleProperties(settings: Record<string, unknown>): void {
+		// Migrate text decoration booleans to modes
+		if ("useBoldUnicode" in settings) {
+			settings.boldMode = settings.useBoldUnicode ? "unicode" : "remove";
+			delete settings.useBoldUnicode;
+		}
+		if ("useItalicUnicode" in settings) {
+			settings.italicMode = settings.useItalicUnicode ? "unicode" : "remove";
+			delete settings.useItalicUnicode;
+		}
+		if ("useStrikethrough" in settings) {
+			settings.strikethroughMode = settings.useStrikethrough
+				? "unicode"
+				: "remove";
+			delete settings.useStrikethrough;
+		}
+
 		if (!settings.customRules) return;
 
 		for (const rule of settings.customRules as Record<string, unknown>[]) {
