@@ -3,7 +3,15 @@
  */
 
 import { type App, Modal, Setting } from "obsidian";
-import type { CustomRule } from "../types";
+import type { CustomRule, Preset } from "../types";
+import {
+	renderBlockElementsSection,
+	renderCodeSection,
+	renderHeadingsSection,
+	renderListsSection,
+	renderTextDecorationSection,
+	type SectionCallbacks,
+} from "./markdown";
 
 // =============================================================================
 // Confirm Modal - Delete confirmation dialog
@@ -157,6 +165,53 @@ export class RuleEditorModal extends Modal {
 			href: "https://developer.mozilla.org/docs/Web/JavaScript/Guide/Regular_expressions",
 		});
 		link.setAttr("target", "_blank");
+	}
+
+	onClose() {
+		this.onCloseCallback();
+	}
+}
+
+// =============================================================================
+// Markdown Settings Modal - Edit markdown conversion settings
+// =============================================================================
+
+export class MarkdownSettingsModal extends Modal {
+	private preset: Preset;
+	private onSaveCallback: () => Promise<void>;
+	private onCloseCallback: () => void;
+
+	constructor(
+		app: App,
+		preset: Preset,
+		onSave: () => Promise<void>,
+		onCloseCallback: () => void,
+	) {
+		super(app);
+		this.preset = preset;
+		this.onSaveCallback = onSave;
+		this.onCloseCallback = onCloseCallback;
+	}
+
+	onOpen() {
+		const { contentEl } = this;
+		contentEl.empty();
+		contentEl.createEl("h2", { text: "Markdown Settings" });
+
+		const sectionCallbacks: SectionCallbacks = {
+			saveSettings: () => this.onSaveCallback(),
+			refreshDisplay: () => this.refreshContent(),
+		};
+
+		renderHeadingsSection(contentEl, this.preset, sectionCallbacks);
+		renderListsSection(contentEl, this.preset, sectionCallbacks);
+		renderBlockElementsSection(contentEl, this.preset, sectionCallbacks);
+		renderCodeSection(contentEl, this.preset, sectionCallbacks);
+		renderTextDecorationSection(contentEl, this.preset, sectionCallbacks);
+	}
+
+	private refreshContent() {
+		this.onOpen();
 	}
 
 	onClose() {

@@ -11,15 +11,7 @@ import {
 	type Preset,
 } from "../types";
 import { renderCustomRulesSection } from "./custom-rules";
-import {
-	renderBlockElementsSection,
-	renderCodeSection,
-	renderHeadingsSection,
-	renderListsSection,
-	renderTextDecorationSection,
-	type SectionCallbacks,
-} from "./markdown";
-import { ConfirmModal } from "./modals";
+import { ConfirmModal, MarkdownSettingsModal } from "./modals";
 
 // =============================================================================
 // Types
@@ -326,42 +318,38 @@ export function renderPresetEditor(
 			}),
 		);
 
+	// Markdown settings with toggle and configure button
+	new Setting(containerEl)
+		.setName("Markdown Settings")
+		.addExtraButton((button) =>
+			button
+				.setIcon("settings")
+				.setTooltip("Configure")
+				.onClick(() => {
+					const modal = new MarkdownSettingsModal(
+						app,
+						preset,
+						() => callbacks.saveSettings(),
+						() => callbacks.refreshDisplay(),
+					);
+					modal.open();
+				}),
+		)
+		.addToggle((toggle) =>
+			toggle
+				.setValue(preset.settings.enableMarkdownConversion)
+				.onChange(async (value) => {
+					preset.settings.enableMarkdownConversion = value;
+					await callbacks.saveSettings();
+				}),
+		);
+
+	// Separator
+	containerEl.createEl("hr", { cls: "setting-separator" });
+
 	// Custom rules section
 	renderCustomRulesSection(containerEl, app, preset, {
 		saveSettings: () => callbacks.saveSettings(),
 		refreshDisplay: () => callbacks.refreshDisplay(),
 	});
-
-	// Separator
-	containerEl.createEl("hr", { cls: "setting-separator" });
-
-	// Markdown settings header
-	containerEl.createEl("h2", { text: "Markdown Settings" });
-
-	// Markdown settings master toggle
-	new Setting(containerEl).setName("Enabled").addToggle((toggle) =>
-		toggle
-			.setValue(preset.settings.enableMarkdownConversion)
-			.onChange(async (value) => {
-				preset.settings.enableMarkdownConversion = value;
-				await callbacks.saveSettings();
-				callbacks.refreshDisplay();
-			}),
-	);
-
-	if (!preset.settings.enableMarkdownConversion) {
-		return;
-	}
-
-	// Markdown setting sections
-	const sectionCallbacks: SectionCallbacks = {
-		saveSettings: () => callbacks.saveSettings(),
-		refreshDisplay: () => callbacks.refreshDisplay(),
-	};
-
-	renderHeadingsSection(containerEl, preset, sectionCallbacks);
-	renderListsSection(containerEl, preset, sectionCallbacks);
-	renderBlockElementsSection(containerEl, preset, sectionCallbacks);
-	renderCodeSection(containerEl, preset, sectionCallbacks);
-	renderTextDecorationSection(containerEl, preset, sectionCallbacks);
 }
