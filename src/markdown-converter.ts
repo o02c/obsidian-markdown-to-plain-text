@@ -149,7 +149,7 @@ function renderStrong(token: Tokens.Strong, ctx: RenderContext): string {
 			return `**${text}**`;
 		case "unicode":
 			return convertToBoldUnicode(text);
-		default:
+		case "remove":
 			return text;
 	}
 }
@@ -161,7 +161,7 @@ function renderEm(token: Tokens.Em, ctx: RenderContext): string {
 			return `*${text}*`;
 		case "unicode":
 			return convertToItalicUnicode(text);
-		default:
+		case "remove":
 			return text;
 	}
 }
@@ -173,7 +173,7 @@ function renderDel(token: Tokens.Del, ctx: RenderContext): string {
 			return `~~${text}~~`;
 		case "unicode":
 			return convertToStrikethrough(text);
-		default:
+		case "remove":
 			return text;
 	}
 }
