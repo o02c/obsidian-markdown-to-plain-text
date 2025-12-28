@@ -1,12 +1,9 @@
 /**
  * File I/O utilities for saving content via Electron dialogs.
+ * Desktop only - uses Electron's remote module and Node.js fs.
  */
 
-import { Notice } from "obsidian";
-
-const { remote } = require("electron");
-// biome-ignore lint/style/useNodejsImportProtocol: Obsidian plugin bundler doesn't support node: protocol
-const fs = require("fs");
+import { Notice, Platform } from "obsidian";
 
 // =============================================================================
 // Types
@@ -46,11 +43,21 @@ export const FILE_FILTERS: Record<string, FileFilter[]> = {
 // File Operations
 // =============================================================================
 
-/** Show a save dialog and write content to the selected file */
+/** Show a save dialog and write content to the selected file (Desktop only) */
 export async function saveToFile(
 	content: string,
 	options: SaveDialogOptions,
 ): Promise<boolean> {
+	if (!Platform.isDesktop) {
+		new Notice("Save to file is only available on desktop");
+		return false;
+	}
+
+	// Lazy load electron and fs to avoid crashes on mobile
+	const { remote } = require("electron");
+	// biome-ignore lint/style/useNodejsImportProtocol: Obsidian plugin bundler doesn't support node: protocol
+	const fs = require("fs");
+
 	const result: SaveDialogResult = await remote.dialog.showSaveDialog(options);
 
 	if (result.canceled || !result.filePath) {

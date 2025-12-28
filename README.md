@@ -4,22 +4,22 @@ Convert Markdown to plain text with Unicode formatting and custom regex rules.
 
 ## Features
 
-- **Markdown Conversion**
+- **Markdown Conversion**  
   Convert markdown syntax to Unicode-formatted plain text.
   Headings become prefixed with custom characters, bold/italic text uses mathematical Unicode characters, and more.
 
-- **Multiple Presets**
+- **Multiple Presets**  
   Create and manage multiple conversion presets for different use cases.
   Each preset has its own copy and save commands accessible via command palette.
 
-- **Custom Regex Rules**
+- **Custom Regex Rules**  
   Define your own regex replacement rules to customize the conversion output.
   Rules can be applied before or after the markdown conversion.
 
-- **Flexible Output**
+- **Flexible Output**  
   Copy converted text to clipboard or save directly to a file.
 
-- **Selection or Entire File**
+- **Selection or Entire File**  
   Works with selected text or the entire file (excluding frontmatter) when no selection is made.
 
 ## Commands

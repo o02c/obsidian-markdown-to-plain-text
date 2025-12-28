@@ -3,7 +3,7 @@
  * Provides list view and editor view for conversion presets.
  */
 
-import { type App, Setting, setIcon } from "obsidian";
+import { type App, Modal, Setting, setIcon } from "obsidian";
 import {
 	DEFAULT_SETTINGS,
 	generatePresetId,
@@ -11,15 +11,7 @@ import {
 	type Preset,
 } from "../types";
 import { renderCustomRulesSection } from "./custom-rules";
-import {
-	renderBlockElementsSection,
-	renderCodeSection,
-	renderHeadingsSection,
-	renderListsSection,
-	renderTextDecorationSection,
-	type SectionCallbacks,
-} from "./markdown";
-import { ConfirmModal } from "./modals";
+import { ConfirmModal, MarkdownSettingsModal } from "./modals";
 
 // =============================================================================
 // Types
@@ -30,8 +22,6 @@ export interface PresetCallbacks {
 	saveSettings: () => Promise<void>;
 	registerCommands: () => void;
 	refreshDisplay: () => void;
-	setEditingPresetId: (id: string | null) => void;
-	getEditingPresetId: () => string | null;
 }
 
 // =============================================================================
@@ -239,8 +229,8 @@ function renderPresetControls(
 				.setIcon("settings")
 				.setTooltip("Edit")
 				.onClick(() => {
-					callbacks.setEditingPresetId(preset.id);
-					callbacks.refreshDisplay();
+					const modal = new PresetEditorModal(app, preset, callbacks);
+					modal.open();
 				}),
 		)
 		// Duplicate button
@@ -287,81 +277,79 @@ function renderPresetControls(
 }
 
 // =============================================================================
-// Preset Editor View
+// Preset Editor Modal
 // =============================================================================
 
-export function renderPresetEditor(
-	containerEl: HTMLElement,
-	app: App,
-	callbacks: PresetCallbacks,
-): void {
-	const editingPresetId = callbacks.getEditingPresetId();
-	const preset = callbacks
-		.getSettings()
-		.presets.find((p) => p.id === editingPresetId);
+class PresetEditorModal extends Modal {
+	private preset: Preset;
+	private callbacks: PresetCallbacks;
 
-	if (!preset) {
-		callbacks.setEditingPresetId(null);
-		callbacks.refreshDisplay();
-		return;
+	constructor(app: App, preset: Preset, callbacks: PresetCallbacks) {
+		super(app);
+		this.preset = preset;
+		this.callbacks = callbacks;
 	}
 
-	// Back button
-	new Setting(containerEl).addButton((button) =>
-		button.setButtonText("<- Back to Presets").onClick(() => {
-			callbacks.setEditingPresetId(null);
-			callbacks.refreshDisplay();
-		}),
-	);
+	onOpen() {
+		const { contentEl } = this;
+		contentEl.empty();
 
-	// Preset name
-	new Setting(containerEl)
-		.setName("Preset Name")
-		.setHeading()
-		.addText((text) =>
-			text.setValue(preset.name).onChange(async (value) => {
-				preset.name = value;
-				await callbacks.saveSettings();
-				callbacks.registerCommands();
-			}),
-		);
+		// Modal header
+		contentEl.createEl("h2", { text: `Preset: ${this.preset.name}` });
 
-	// Custom rules section
-	renderCustomRulesSection(containerEl, app, preset, {
-		saveSettings: () => callbacks.saveSettings(),
-		refreshDisplay: () => callbacks.refreshDisplay(),
-	});
+		// Preset name
+		new Setting(contentEl)
+			.setName("Name")
+			.addText((text) =>
+				text.setValue(this.preset.name).onChange(async (value) => {
+					this.preset.name = value;
+					await this.callbacks.saveSettings();
+					this.callbacks.registerCommands();
+					// Update header
+					const header = contentEl.querySelector("h2");
+					if (header) header.textContent = `Preset: ${value}`;
+				}),
+			);
 
-	// Separator
-	containerEl.createEl("hr", { cls: "setting-separator" });
+		// Markdown settings with toggle and configure button
+		new Setting(contentEl)
+			.setName("Markdown Conversion")
+			.addExtraButton((button) =>
+				button
+					.setIcon("settings")
+					.setTooltip("Configure")
+					.onClick(() => {
+						const modal = new MarkdownSettingsModal(
+							this.app,
+							this.preset,
+							() => this.callbacks.saveSettings(),
+							() => {},
+						);
+						modal.open();
+					}),
+			)
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.preset.settings.enableMarkdownConversion)
+					.onChange(async (value) => {
+						this.preset.settings.enableMarkdownConversion = value;
+						await this.callbacks.saveSettings();
+					}),
+			);
 
-	// Markdown settings header
-	containerEl.createEl("h2", { text: "Markdown Settings" });
-
-	// Markdown settings master toggle
-	new Setting(containerEl).setName("Enabled").addToggle((toggle) =>
-		toggle
-			.setValue(preset.settings.enableMarkdownConversion)
-			.onChange(async (value) => {
-				preset.settings.enableMarkdownConversion = value;
-				await callbacks.saveSettings();
-				callbacks.refreshDisplay();
-			}),
-	);
-
-	if (!preset.settings.enableMarkdownConversion) {
-		return;
+		// Custom rules section
+		renderCustomRulesSection(contentEl, this.app, this.preset, {
+			saveSettings: () => this.callbacks.saveSettings(),
+			refreshDisplay: () => this.refreshContent(),
+		});
 	}
 
-	// Markdown setting sections
-	const sectionCallbacks: SectionCallbacks = {
-		saveSettings: () => callbacks.saveSettings(),
-		refreshDisplay: () => callbacks.refreshDisplay(),
-	};
+	private refreshContent() {
+		this.onOpen();
+	}
 
-	renderHeadingsSection(containerEl, preset, sectionCallbacks);
-	renderListsSection(containerEl, preset, sectionCallbacks);
-	renderBlockElementsSection(containerEl, preset, sectionCallbacks);
-	renderCodeSection(containerEl, preset, sectionCallbacks);
-	renderTextDecorationSection(containerEl, preset, sectionCallbacks);
+	onClose() {
+		this.callbacks.refreshDisplay();
+		this.contentEl.empty();
+	}
 }

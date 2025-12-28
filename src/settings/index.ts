@@ -5,11 +5,7 @@
 
 import { type App, PluginSettingTab } from "obsidian";
 import type SelectionToFilePlugin from "../../main";
-import {
-	type PresetCallbacks,
-	renderPresetEditor,
-	renderPresetList,
-} from "./presets";
+import { type PresetCallbacks, renderPresetList } from "./presets";
 
 // =============================================================================
 // Re-exports
@@ -28,7 +24,6 @@ export { DEFAULT_SETTINGS, generatePresetId } from "../types";
 
 export class SettingTab extends PluginSettingTab {
 	plugin: SelectionToFilePlugin;
-	private editingPresetId: string | null = null;
 
 	constructor(app: App, plugin: SelectionToFilePlugin) {
 		super(app, plugin);
@@ -44,16 +39,8 @@ export class SettingTab extends PluginSettingTab {
 			saveSettings: () => this.plugin.saveSettings(),
 			registerCommands: () => this.plugin.registerPresetCommands(),
 			refreshDisplay: () => this.display(),
-			setEditingPresetId: (id) => {
-				this.editingPresetId = id;
-			},
-			getEditingPresetId: () => this.editingPresetId,
 		};
 
-		if (this.editingPresetId) {
-			renderPresetEditor(containerEl, this.app, callbacks);
-		} else {
-			renderPresetList(containerEl, this.app, callbacks);
-		}
+		renderPresetList(containerEl, this.app, callbacks);
 	}
 }
