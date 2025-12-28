@@ -173,7 +173,7 @@ export class RuleEditorModal extends Modal {
 }
 
 // =============================================================================
-// Markdown Settings Modal - Edit markdown conversion settings
+// Markdown Conversion Modal - Edit markdown conversion settings
 // =============================================================================
 
 export class MarkdownSettingsModal extends Modal {
@@ -196,7 +196,7 @@ export class MarkdownSettingsModal extends Modal {
 	onOpen() {
 		const { contentEl } = this;
 		contentEl.empty();
-		contentEl.createEl("h2", { text: "Markdown Settings" });
+		contentEl.createEl("h2", { text: "Markdown Conversion" });
 
 		const sectionCallbacks: SectionCallbacks = {
 			saveSettings: () => this.onSaveCallback(),

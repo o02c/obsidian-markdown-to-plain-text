@@ -26,16 +26,12 @@ export function renderCustomRulesSection(
 	preset: Preset,
 	callbacks: CustomRuleCallbacks,
 ): void {
-	// Section header
-	containerEl.createEl("h2", { text: "Custom Rules" });
-	containerEl.createEl("p", {
-		text: "Regex replacement rules applied after markdown conversion.",
-		cls: "setting-item-description",
-	});
-
-	// Add rule button
-	new Setting(containerEl).addButton((button) =>
-		button.setButtonText("Add Rule").onClick(async () => {
+	// Section header with Add button
+	new Setting(containerEl)
+		.setName("Custom Rules")
+		.setDesc("Regex replacement rules applied after markdown conversion")
+		.addButton((button) =>
+			button.setButtonText("Add Rule").onClick(async () => {
 			preset.settings.customRules.push({
 				name: "",
 				pattern: "",
