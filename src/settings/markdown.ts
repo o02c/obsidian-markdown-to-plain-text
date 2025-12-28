@@ -4,7 +4,7 @@
  */
 
 import { Setting, setIcon } from "obsidian";
-import type { Preset } from "../types";
+import type { Preset, TextDecorationMode } from "../types";
 
 // =============================================================================
 // Types
@@ -205,39 +205,48 @@ export function renderTextDecorationSection(
 		.setHeading();
 	addIconToSetting(textSetting, "bold");
 
-	// Unicode conversion toggles
+	// Text decoration mode dropdowns
+	const modeOptions: Record<TextDecorationMode, string> = {
+		keep: "Keep markdown",
+		remove: "Remove markers",
+		unicode: "Convert to Unicode",
+	};
+
 	new Setting(container)
-		.setName("Bold to Unicode")
-		.setDesc("Convert **bold** to 𝐛𝐨𝐥𝐝 (only works with ASCII)")
-		.addToggle((toggle) =>
-			toggle
-				.setValue(preset.settings.useBoldUnicode)
+		.setName("Bold")
+		.setDesc("**bold** → 𝐛𝐨𝐥𝐝 (Unicode only works with ASCII)")
+		.addDropdown((dropdown) =>
+			dropdown
+				.addOptions(modeOptions)
+				.setValue(preset.settings.boldMode)
 				.onChange(async (value) => {
-					preset.settings.useBoldUnicode = value;
+					preset.settings.boldMode = value as TextDecorationMode;
 					await callbacks.saveSettings();
 				}),
 		);
 
 	new Setting(container)
-		.setName("Italic to Unicode")
-		.setDesc("Convert *italic* to 𝑖𝑡𝑎𝑙𝑖𝑐 (only works with ASCII)")
-		.addToggle((toggle) =>
-			toggle
-				.setValue(preset.settings.useItalicUnicode)
+		.setName("Italic")
+		.setDesc("*italic* → 𝑖𝑡𝑎𝑙𝑖𝑐 (Unicode only works with ASCII)")
+		.addDropdown((dropdown) =>
+			dropdown
+				.addOptions(modeOptions)
+				.setValue(preset.settings.italicMode)
 				.onChange(async (value) => {
-					preset.settings.useItalicUnicode = value;
+					preset.settings.italicMode = value as TextDecorationMode;
 					await callbacks.saveSettings();
 				}),
 		);
 
 	new Setting(container)
 		.setName("Strikethrough")
-		.setDesc("Convert ~~text~~ to t̶e̶x̶t̶")
-		.addToggle((toggle) =>
-			toggle
-				.setValue(preset.settings.useStrikethrough)
+		.setDesc("~~text~~ → t̶e̶x̶t̶")
+		.addDropdown((dropdown) =>
+			dropdown
+				.addOptions(modeOptions)
+				.setValue(preset.settings.strikethroughMode)
 				.onChange(async (value) => {
-					preset.settings.useStrikethrough = value;
+					preset.settings.strikethroughMode = value as TextDecorationMode;
 					await callbacks.saveSettings();
 				}),
 		);

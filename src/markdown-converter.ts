@@ -144,17 +144,38 @@ function renderText(token: Tokens.Text, ctx: RenderContext): string {
 
 function renderStrong(token: Tokens.Strong, ctx: RenderContext): string {
 	const text = renderTokens(token.tokens, ctx);
-	return ctx.settings.useBoldUnicode ? convertToBoldUnicode(text) : text;
+	switch (ctx.settings.boldMode) {
+		case "keep":
+			return `**${text}**`;
+		case "unicode":
+			return convertToBoldUnicode(text);
+		case "remove":
+			return text;
+	}
 }
 
 function renderEm(token: Tokens.Em, ctx: RenderContext): string {
 	const text = renderTokens(token.tokens, ctx);
-	return ctx.settings.useItalicUnicode ? convertToItalicUnicode(text) : text;
+	switch (ctx.settings.italicMode) {
+		case "keep":
+			return `*${text}*`;
+		case "unicode":
+			return convertToItalicUnicode(text);
+		case "remove":
+			return text;
+	}
 }
 
 function renderDel(token: Tokens.Del, ctx: RenderContext): string {
 	const text = renderTokens(token.tokens, ctx);
-	return ctx.settings.useStrikethrough ? convertToStrikethrough(text) : text;
+	switch (ctx.settings.strikethroughMode) {
+		case "keep":
+			return `~~${text}~~`;
+		case "unicode":
+			return convertToStrikethrough(text);
+		case "remove":
+			return text;
+	}
 }
 
 // =============================================================================

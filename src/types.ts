@@ -4,6 +4,13 @@
  */
 
 // =============================================================================
+// Text Decoration Mode
+// =============================================================================
+
+/** Mode for text decoration conversion */
+export type TextDecorationMode = "keep" | "remove" | "unicode";
+
+// =============================================================================
 // Custom Rule Types
 // =============================================================================
 
@@ -61,10 +68,10 @@ export interface MarkdownConversionSettings {
 	checkboxChecked: string;
 	checkboxUnchecked: string;
 
-	// Text decoration (individual toggles)
-	useBoldUnicode: boolean;
-	useItalicUnicode: boolean;
-	useStrikethrough: boolean;
+	// Text decoration (mode: keep, remove, unicode)
+	boldMode: TextDecorationMode;
+	italicMode: TextDecorationMode;
+	strikethroughMode: TextDecorationMode;
 
 	// Block elements (individual toggles)
 	enableHorizontalRule: boolean;
@@ -105,9 +112,9 @@ export const DEFAULT_SETTINGS: MarkdownConversionSettings = {
 	checkboxUnchecked: "☐",
 
 	// Text decoration
-	useBoldUnicode: true,
-	useItalicUnicode: true,
-	useStrikethrough: true,
+	boldMode: "unicode",
+	italicMode: "unicode",
+	strikethroughMode: "unicode",
 
 	// Block elements
 	enableHorizontalRule: true,

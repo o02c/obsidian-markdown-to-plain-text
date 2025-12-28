@@ -44,9 +44,10 @@ Preset commands are dynamically generated for each preset you create in settings
 - Checkbox symbols for checked/unchecked states (default: `☑☐`)
 
 ### Text Decoration
-- Bold text → Mathematical Bold Unicode (𝐁𝐨𝐥𝐝) (default: on)
-- Italic text → Mathematical Italic Unicode (𝐼𝑡𝑎𝑙𝑖𝑐) (default: on)
-- Strikethrough → Combining strikethrough character (S̶t̶r̶i̶k̶e̶) (default: on)
+Each option has 3 modes: Keep markdown, Remove markers, Convert to Unicode (default)
+- Bold: `**text**` → `**text**` / `text` / `𝐭𝐞𝐱𝐭` (Unicode: ASCII only)
+- Italic: `*text*` → `*text*` / `text` / `𝑡𝑒𝑥𝑡` (Unicode: ASCII only)
+- Strikethrough: `~~text~~` → `~~text~~` / `text` / `t̶e̶x̶t̶`
 
 ### Block Elements
 - Horizontal rule replacement (default: `────────────`)
