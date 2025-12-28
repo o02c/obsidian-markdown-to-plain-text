@@ -169,6 +169,7 @@ export class RuleEditorModal extends Modal {
 
 	onClose() {
 		this.onCloseCallback();
+		this.contentEl.empty();
 	}
 }
 
@@ -216,5 +217,6 @@ export class MarkdownSettingsModal extends Modal {
 
 	onClose() {
 		this.onCloseCallback();
+		this.contentEl.empty();
 	}
 }
